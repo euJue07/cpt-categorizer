@@ -9,6 +9,8 @@ load_dotenv()
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o")
 OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+GPT4O_COST_INPUT = 0.005 / 1000
+GPT4O_COST_OUTPUT = 0.015 / 1000
 
 
 def get_openai_client() -> openai.Client:
