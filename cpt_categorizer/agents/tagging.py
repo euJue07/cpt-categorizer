@@ -181,3 +181,9 @@ def tag_section_and_subsection(
 # - Return those details as part of the TaggingResult
 # - Add unit tests for tag_section, tag_subsection, and tag_section_and_subsection
 # - Consider fallback logic if confidence is below a threshold (e.g., mark as UNCAT)
+
+# === TODO: Parsing Agent Pattern Alignment ===
+# [ ] 1. Define a structured `DetailTaggingResult` dataclass similar to `ParsingResult`
+# [ ] 4. Implement `tag_details()` with OpenAI function calling and schema enforcement
+# [ ] 5. Add a `log_tagging_result()` function to track usage, cost, and errors
+# [ ] 6. Include exception handling with confidence fallback or structured error return
