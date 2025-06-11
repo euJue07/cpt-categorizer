@@ -11,23 +11,37 @@ from cpt_categorizer.config.openai import (
     GPT4O_COST_OUTPUT,
 )
 from cpt_categorizer.utils.logging_utils import log_usage_row
+from dataclasses import dataclass
 
 PH_TZ = timezone(timedelta(hours=8))
 
 
+@dataclass
+class ParsingResult:
+    cleaned: str
+    confidence_score: float
+    is_ambiguous: bool
+    error: Optional[str] = None
+
+
 # System prompt guiding the model on how to clean medical CPT descriptions
 SYSTEM_PROMPT = """You are a medical text cleaning assistant for healthcare procedure codes (CPTs).
-Your job is to clean up messy, inconsistent medical procedure descriptions for downstream categorization.
+Your job is to clean messy, inconsistent procedure descriptions while preserving all potentially relevant medical or billing information.
 
-Follow these rules:
-1. Expand known medical abbreviations when clear (e.g., PT -> prothrombin time), but flag if ambiguous.
-2. Remove administrative codes, filler prefixes, suffixes, or version indicators (e.g., "Code 1012", "v2").
-3. Retain medically relevant phrases like "with contrast", "2D echo", "MRI of brain".
-4. Lower cased, but preserve acronyms (e.g., HIV, CT, MRI).
-5. Fix punctuation and remove unneeded quotes or parentheticals unless medically relevant.
-6. Do not assign any structure — return only the cleaned and informative phrase.
+Follow these strict rules:
+1. Do NOT remove any medically or operationally meaningful detail, such as:
+   - anatomical sites, age qualifiers (e.g., adult, pediatric)
+   - imaging views (e.g., PA, lateral), sizes (e.g., 11x14), units
+   - cost/billing terms (e.g., net of PHIC, inclusive of PF), discounts
+   - device or procedure-specific phrases (e.g., with contrast, laparoscopic)
+2. Expand known abbreviations where safe (e.g., PT → prothrombin time), but do not guess.
+3. Remove only:
+   - unnecessary quotes, trailing version codes, internal IDs
+   - filler prefixes like "Code 1012", "v2", or hospital-specific artifacts
+4. Preserve parentheses if the contents are relevant (e.g., "(adult)", "(with PF)")
+5. Normalize spacing and punctuation only when safe to do so.
 
-Return only the cleaned text via function call: `clean_cpt_description`.
+Return the minimally cleaned but detail-preserving phrase using the function `clean_cpt_description`.
 """
 
 # Specification for the OpenAI function call to parse and clean CPT descriptions
@@ -62,8 +76,41 @@ def compute_cost(prompt_tokens: int, completion_tokens: int) -> float:
     return (prompt_tokens * GPT4O_COST_INPUT) + (completion_tokens * GPT4O_COST_OUTPUT)
 
 
+# Helper function to log parsing results in a consistent way
+def log_parsing_result(
+    raw_text: str,
+    parsed_output: str,
+    prompt_tokens: int,
+    completion_tokens: int,
+    success: bool,
+    is_error: bool,
+    start_time: float,
+    error_message: str = "",
+):
+    timestamp = datetime.now(PH_TZ).isoformat()
+    total_tokens = prompt_tokens + completion_tokens
+    cost_total = compute_cost(prompt_tokens, completion_tokens)
+    runtime_ms = round((time.time() - start_time) * 1000, 2)
+
+    log_usage_row(
+        timestamp=timestamp,
+        raw_text=raw_text,
+        parsed_output=parsed_output,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        total_tokens=total_tokens,
+        cost_usd=round(cost_total, 6),
+        model=OPENAI_MODEL,
+        runtime_ms=runtime_ms,
+        success=success,
+        is_error=is_error,
+        error_message=error_message,
+        log_name="parsing_agent",
+    )
+
+
 # Main parsing function that uses OpenAI's function calling to clean CPT descriptions
-def parse(raw_text: str, client: Optional[openai.OpenAI] = None) -> dict:
+def parse(raw_text: str, client: Optional[openai.OpenAI] = None) -> ParsingResult:
     """
     Clean and normalize a raw CPT description using OpenAI function calling.
 
@@ -72,7 +119,7 @@ def parse(raw_text: str, client: Optional[openai.OpenAI] = None) -> dict:
         client (Optional[openai.OpenAI]): Optionally provide an OpenAI client.
 
     Returns:
-        dict: Dictionary with keys 'cleaned', 'confidence_score', and 'is_ambiguous'.
+        ParsingResult: Parsed result containing the cleaned description, confidence score, and ambiguity flag.
     """
 
     # Initialize OpenAI client if not provided
@@ -107,82 +154,54 @@ def parse(raw_text: str, client: Optional[openai.OpenAI] = None) -> dict:
         # Retrieve token usage info for cost calculation and logging
         prompt_tokens = int(getattr(response.usage, "prompt_tokens", 0) or 0)
         completion_tokens = int(getattr(response.usage, "completion_tokens", 0) or 0)
-        total_tokens = prompt_tokens + completion_tokens
-        cost_total = compute_cost(prompt_tokens, completion_tokens)
 
         parsed_output = cleaned.strip()
-        model_used = OPENAI_MODEL
-        timestamp = datetime.now(PH_TZ).isoformat()
-        runtime_ms = round((time.time() - start_time) * 1000, 2)
 
         # Log successful usage data
-        log_usage_row(
-            timestamp,
-            raw_text,
-            parsed_output,
-            prompt_tokens,
-            completion_tokens,
-            total_tokens,
-            round(cost_total, 6),
-            model_used,
-            runtime_ms,
-            True,
-            "",
-            log_name="parsing_agent",
+        log_parsing_result(
+            raw_text=raw_text,
+            parsed_output=parsed_output,
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            success=True,
+            is_error=False,
+            start_time=start_time,
         )
 
-        return {
-            "cleaned": parsed_output,
-            "confidence_score": confidence_score,
-            "is_ambiguous": is_ambiguous,
-        }
+        return ParsingResult(
+            cleaned=parsed_output,
+            confidence_score=confidence_score,
+            is_ambiguous=is_ambiguous,
+        )
 
     except (OpenAIError, KeyError, IndexError, json.JSONDecodeError) as e:
         # Handle known exceptions related to OpenAI API and parsing
-        timestamp = datetime.now(PH_TZ).isoformat()
-        model_used = OPENAI_MODEL
-        runtime_ms = round((time.time() - start_time) * 1000, 2)
-        # Log failure with error message
-        log_usage_row(
-            timestamp,
-            raw_text,
-            "",
-            "",
-            "",
-            "",
-            "",
-            model_used,
-            runtime_ms,
-            False,
-            True,
-            str(e),
-            log_name="parsing_agent",
+        log_parsing_result(
+            raw_text=raw_text,
+            parsed_output="",
+            prompt_tokens=0,
+            completion_tokens=0,
+            success=False,
+            is_error=True,
+            start_time=start_time,
+            error_message=str(e),
         )
-        return {
-            "cleaned": raw_text.strip(),
-            "confidence_score": 0.0,
-            "is_ambiguous": False,
-            "error": str(e),
-        }
+        return ParsingResult(
+            cleaned=raw_text.strip(),
+            confidence_score=0.0,
+            is_ambiguous=False,
+            error=str(e),
+        )
     except Exception as e:
         # Handle any unexpected exceptions
-        timestamp = datetime.now(PH_TZ).isoformat()
-        model_used = OPENAI_MODEL
-        runtime_ms = round((time.time() - start_time) * 1000, 2)
-        # Log failure with error message
-        log_usage_row(
-            timestamp,
-            raw_text,
-            "",
-            "",
-            "",
-            "",
-            "",
-            model_used,
-            runtime_ms,
-            False,
-            True,
-            str(e),
-            log_name="parsing_agent",
+        log_parsing_result(
+            raw_text=raw_text,
+            parsed_output="",
+            prompt_tokens=0,
+            completion_tokens=0,
+            success=False,
+            is_error=True,
+            start_time=start_time,
+            error_message=str(e),
         )
         raise RuntimeError(f"Unexpected error in parsing: {e}")

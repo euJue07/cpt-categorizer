@@ -1,0 +1,5 @@
+timestamp,raw_text,parsed_output,prompt_tokens,completion_tokens,total_tokens,cost_usd,model,runtime_ms,success,is_error,error_message
+2025-06-11T21:13:09.679329+08:00,"""LAPAROSCOPIC CHOLECYSTECTOMY PACKAGE (NET OF PHIC, INCLUSIVE OF PF, AFTER SENIOR/PWD DISCOUNT)"",9654",,,,,,gpt-4o,2639.32,False,True,log_usage_row() missing 1 required positional argument: 'error_message'
+2025-06-11T21:20:38.944164+08:00,"""LAPAROSCOPIC CHOLECYSTECTOMY PACKAGE (NET OF PHIC, INCLUSIVE OF PF, AFTER SENIOR/PWD DISCOUNT)"",9654",laparoscopic cholecystectomy,351,27,378,0.00216,gpt-4o,14833.81,True,,
+2025-06-11T21:21:54.174151+08:00,XRAY-CHEST PAL 11X14 (ADULT),x-ray chest,329,22,351,0.001975,gpt-4o,1600.08,True,,
+2025-06-11T21:51:10.222866+08:00,"EXTRACORPOREAL SHOCK WAVE LITHOTRIPSY (ESWL) (NET OF PHIC, PF INCLUDED),7042","Extracorporeal shock wave lithotripsy (ESWL) (net of PHIC, PF included)",412,43,455,0.002705,gpt-4o,1319.88,True,,
