@@ -1,0 +1,67 @@
+{
+  "LAB": {
+    "description": "Laboratory diagnostics",
+    "subsections": {
+      "chemistry": "Tests for chemical components in blood such as glucose, lipids, and enzymes",
+      "hematology": "Tests related to blood cells and composition",
+      "coagulation": "Tests measuring blood clotting ability",
+      "immunology": "Tests assessing immune response and antibodies",
+      "endocrinology": "Hormone and endocrine system-related tests",
+      "infectious_disease": "Tests identifying pathogens such as viruses or bacteria",
+      "tumor_markers": "Blood tests used to detect or monitor cancer",
+      "vitamins_nutrition": "Tests for assessing vitamin and nutritional levels",
+      "iron_studies": "Tests evaluating iron status and metabolism",
+      "inflammation": "Markers indicating presence of inflammation",
+      "urinalysis": "Routine urine testing for diagnostics"
+    }
+  },
+  "IMAGING": {
+    "description": "Radiologic and sonographic diagnostics",
+    "subsections": {
+      "xray": "X-ray imaging of bones and internal structures",
+      "ultrasound": "Ultrasound imaging using sound waves",
+      "CT": "Computed tomography scans for detailed imaging",
+      "MRI": "Magnetic resonance imaging for soft tissue visualization",
+      "ophthalmologic": "Eye imaging for retina and corneal evaluation"
+    }
+  },
+  "PROCEDURES": {
+    "description": "Clinical or surgical procedures",
+    "subsections": {
+      "minor": "Non-invasive or minimally invasive procedures",
+      "major": "Invasive surgical procedures",
+      "uro_procedures": "Procedures related to urological health",
+      "ob_gyn": "Obstetric and gynecologic procedures and screenings",
+      "general_surgical": "General medical or surgical procedures"
+    }
+  },
+  "THERAPY": {
+    "description": "Therapeutic interventions",
+    "subsections": {
+      "rehabilitation": "Physical or occupational therapy sessions",
+      "infusion_dialysis": "Treatment involving infusion or dialysis",
+      "radiotherapy": "Radiation-based cancer treatments"
+    }
+  },
+  "PSYCH": {
+    "description": "Psychological and psychiatric services",
+    "subsections": {
+      "evaluation": "Mental health evaluation and consultation"
+    }
+  },
+  "EYE": {
+    "description": "Ophthalmologic diagnostics and bundles",
+    "subsections": {
+      "diagnostics": "Standalone diagnostic tests for eye health",
+      "packages": "Bundled eye care offerings"
+    }
+  },
+  "BUNDLED": {
+    "description": "Multi-test laboratory panels or packages",
+    "subsections": {
+      "executive_panel": "Executive check-up panel",
+      "chem_panels": "Panels of chemistry-related tests",
+      "disease_panels": "Panels focused on screening for specific diseases"
+    }
+  }
+}

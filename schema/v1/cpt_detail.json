@@ -1,0 +1,507 @@
+{
+  "method": {
+    "description": "Laboratory or procedural techniques used to obtain results",
+    "values": [
+      "fasting",
+      "random",
+      "pcr",
+      "rapid",
+      "manual",
+      "automated",
+      "capillary",
+      "hplc",
+      "irma",
+      "eclia",
+      "cmia",
+      "elisa",
+      "screening",
+      "endoscopy",
+      "injection",
+      "dexa",
+      "angiogram",
+      "exercise",
+      "ogtt",
+      "fusion",
+      "laryngoscopy",
+      "biopsy",
+      "photography",
+      "obstructive_series",
+      "flow_cytometry",
+      "culture",
+      "ria",
+      "ecg",
+      "eswl",
+      "audiometry",
+      "electromyography",
+      "staining"
+    ]
+  },
+  "sample_type": {
+    "description": "Type of biological sample collected",
+    "values": [
+      "serum",
+      "plasma",
+      "whole_blood",
+      "urine",
+      "stool",
+      "swab",
+      "tissue",
+      "sputum",
+      "nasal"
+    ]
+  },
+  "location": {
+    "description": "Anatomical or physical region examined",
+    "values": [
+      "chest",
+      "skull",
+      "abdomen",
+      "left_arm",
+      "kub",
+      "pelvis",
+      "liver",
+      "spine",
+      "hip",
+      "thyroid",
+      "brain",
+      "prostate",
+      "kidney",
+      "coronary",
+      "carotid",
+      "wrist",
+      "hand",
+      "foot",
+      "elbow",
+      "knee",
+      "shoulder",
+      "retina",
+      "uterus",
+      "stomach",
+      "colon",
+      "sinuses",
+      "lower_extremity",
+      "upper_extremity",
+      "neck",
+      "eye",
+      "musculoskeletal",
+      "venous",
+      "arterial",
+      "nasal",
+      "biliary_tract",
+      "heart",
+      "multiple",
+      "scrotal",
+      "thoraco_lumbar",
+      "cranial",
+      "gall_bladder",
+      "pancreas",
+      "receptor",
+      "intraocular_pressure",
+      "circle_of_willis",
+      "lower_abdomen"
+    ]
+  },
+  "views": {
+    "description": "Imaging perspectives captured",
+    "values": [
+      "pa",
+      "ap",
+      "apl",
+      "lateral",
+      "lordotic",
+      "rhythm_strip",
+      "series",
+      "oblique",
+      "y"
+    ]
+  },
+  "film_size": {
+    "description": "Physical size of film used",
+    "values": [
+      "8x10 inches",
+      "10x12 inches",
+      "11x14 inches",
+      "14x17 inches",
+      "14x36 inches"
+    ]
+  },
+  "position": {
+    "description": "Patient's physical orientation during procedure",
+    "values": [
+      "standing",
+      "supine",
+      "seated",
+      "upright",
+      "reclining"
+    ]
+  },
+  "side": {
+    "description": "Laterality or side of body involved",
+    "values": [
+      "left",
+      "right",
+      "bilateral",
+      "unilateral"
+    ]
+  },
+  "urgency": {
+    "description": "Clinical urgency of the test",
+    "values": [
+      "routine",
+      "urgent",
+      "stat"
+    ]
+  },
+  "dose": {
+    "description": "Quantity or intensity administered (e.g., glucose challenge)",
+    "values": [
+      "50g",
+      "75g",
+      "100g"
+    ]
+  },
+  "package": {
+    "description": "Name of bundled test packages",
+    "values": [
+      "chem_10",
+      "executive_a",
+      "triple_test",
+      "ultra_lasik",
+      "thyroid_panel",
+      "thyroid_panel_2",
+      "diabetes_panel",
+      "fasting_panel",
+      "chem_12",
+      "chem_23",
+      "chem_15",
+      "chem_17",
+      "chem_13",
+      "glaucoma"
+    ]
+  },
+  "phase": {
+    "description": "Temporal stage of procedure or test",
+    "values": [
+      "pre_bronchodilator",
+      "post_bronchodilator"
+    ]
+  },
+  "modality": {
+    "description": "Imaging technology or platform used",
+    "values": [
+      "2d",
+      "doppler",
+      "with_contrast",
+      "ct",
+      "mri",
+      "pet_ct",
+      "x_ray",
+      "mra",
+      "mrcp",
+      "3d"
+    ]
+  },
+  "modality_detail": {
+    "description": "Refined imaging platform for specificity",
+    "values": [
+      "ct",
+      "mri"
+    ]
+  },
+  "evaluation_type": {
+    "description": "Purpose of the diagnostic exam",
+    "values": [
+      "diagnostic",
+      "follow_up",
+      "screening",
+      "therapeutic",
+      "rest"
+    ]
+  },
+  "format": {
+    "description": "Data output type",
+    "values": [
+      "quantitative",
+      "qualitative",
+      "semi_quantitative",
+      "plain"
+    ]
+  },
+  "route": {
+    "description": "Method of administration",
+    "values": [
+      "iv",
+      "oral",
+      "subcutaneous",
+      "intramuscular",
+      "transrectal",
+      "local_anesthesia",
+      "radial",
+      "av_fistula"
+    ]
+  },
+  "duration": {
+    "description": "Time over which test or treatment occurs",
+    "values": [
+      "1_hour",
+      "4_hours",
+      "once_weekly",
+      "24_hours",
+      "overnight"
+    ]
+  },
+  "includes_pf": {
+    "description": "Indicates whether professional fee is included",
+    "values": [
+      "yes",
+      "no"
+    ]
+  },
+  "implant": {
+    "description": "Device or object implanted during procedure",
+    "values": [
+      "iol"
+    ]
+  },
+  "analyte": {
+    "description": "Specific biological substance measured in a lab test",
+    "values": [
+      "glucose",
+      "sodium",
+      "potassium",
+      "chloride",
+      "bicarbonate",
+      "calcium",
+      "magnesium",
+      "phosphate",
+      "total_protein",
+      "albumin",
+      "bilirubin_total",
+      "bilirubin_direct",
+      "urea",
+      "creatinine",
+      "uric_acid",
+      "cholesterol_total",
+      "hdl",
+      "ldl",
+      "triglycerides",
+      "hemoglobin",
+      "hematocrit",
+      "rbc",
+      "wbc",
+      "platelet",
+      "mch",
+      "mcv",
+      "rdw",
+      "pt",
+      "ptt",
+      "inr",
+      "bleeding_time",
+      "clotting_time",
+      "fibrinogen",
+      "ana",
+      "aso",
+      "crp",
+      "rheumatoid_factor",
+      "igg",
+      "iga",
+      "ige",
+      "igm",
+      "tsh",
+      "ft3",
+      "ft4",
+      "insulin",
+      "cortisol",
+      "hba1c",
+      "prolactin",
+      "testosterone",
+      "estradiol",
+      "fsh",
+      "lh",
+      "dengue_ns1",
+      "hiv",
+      "hbsag",
+      "hcv",
+      "covid_antigen",
+      "covid_pcr",
+      "influenza_a_b",
+      "mtb_dna",
+      "salmonella",
+      "hsv_1",
+      "hsv_2",
+      "ca_125",
+      "ca_15_3",
+      "ca_19_9",
+      "cea",
+      "afp",
+      "psa",
+      "he4",
+      "vitamin_d",
+      "vitamin_b12",
+      "folate",
+      "ferritin",
+      "transferrin",
+      "iron",
+      "tibc"
+    ]
+  },
+  "anatomy_note": {
+    "description": "Additional anatomical context",
+    "values": [
+      "whole_abdomen",
+      "thoracic",
+      "uterus"
+    ]
+  },
+  "billing_note": {
+    "description": "Reimbursement or pricing-related note",
+    "values": [
+      "net_of_phic",
+      "gross_of_pf"
+    ]
+  },
+  "clinical_context": {
+    "description": "Situational patient characteristics or procedure context",
+    "values": [
+      "pediatric",
+      "adult",
+      "dental_procedure",
+      "viability_study",
+      "guided",
+      "general_anesthesia",
+      "non_pregnant",
+      "portable",
+      "sedation",
+      "routine",
+      "scoliosis",
+      "any_single_organ",
+      "cardiac_scoring",
+      "with_cap",
+      "full_diagnosis"
+    ]
+  },
+  "interpretation": {
+    "description": "Qualifier for analytical result or reading",
+    "values": [
+      "high_sensitivity",
+      "screening",
+      "dynamic",
+      "rest"
+    ]
+  },
+  "misc_note": {
+    "description": "Other relevant descriptors not covered by existing dimensions",
+    "values": [
+      "brain_attack_panel",
+      "central_line",
+      "core_needle",
+      "corneal_thickness",
+      "ctpn",
+      "dipyridamole",
+      "egfr_panel",
+      "emr",
+      "eylea",
+      "fit",
+      "h_pylori",
+      "hsv_1_2",
+      "large_specimen",
+      "with_occult_blood",
+      "lupus",
+      "nerve_conduction",
+      "pra_screening",
+      "refraction",
+      "retina",
+      "saline_infusion",
+      "sensitivity",
+      "sero_tet",
+      "sish",
+      "small_specimen",
+      "split_type",
+      "stonogram",
+      "tacrolimus",
+      "tb",
+      "tetanus_immunoglobulin",
+      "transabdominal",
+      "transvaginal",
+      "tri_phase",
+      "tympanometry",
+      "afb",
+      "anti_dsdna",
+      "mpi",
+      "sella_turcica",
+      "pituitary",
+      "whole_body",
+      "balance_test",
+      "3_sample",
+      "global_longitudinal_strain",
+      "sputum_induction",
+      "imrt",
+      "congenital_anomaly",
+      "sleep_disorder"
+    ]
+  },
+  "tool": {
+    "description": "Specific equipment, brands, or specialized devices used",
+    "values": [
+      "genexpert",
+      "optos",
+      "pentacam",
+      "victus",
+      "oct",
+      "humphrey",
+      "flexible",
+      "mra"
+    ]
+  },
+  "protocol": {
+    "description": "Standardized sequence or protocol followed",
+    "values": [
+      "bruce"
+    ]
+  },
+  "procedure": {
+    "description": "Named clinical or surgical procedures performed",
+    "values": [
+      "colonoscopy",
+      "phacoemulsification",
+      "tooth_extraction",
+      "tulip",
+      "microblepharoexfoliation",
+      "smile",
+      "ear_cleaning",
+      "laparoscopic_cholecystectomy"
+    ]
+  },
+  "type": {
+    "description": "Describes fluid or vessel type",
+    "values": [
+      "arterial",
+      "venous"
+    ]
+  },
+  "target_condition": {
+    "description": "Disease or condition the test aims to detect",
+    "values": [
+      "glaucoma",
+      "lupus",
+      "hepatitis_b",
+      "tb",
+      "salmonella",
+      "hsv_1_2",
+      "h_pylori",
+      "varicella",
+      "dipyridamole",
+      "pra_screening"
+    ]
+  },
+  "biomarker": {
+    "description": "Specific biological indicators being measured",
+    "values": [
+      "ca_15_3",
+      "he4",
+      "egfr",
+      "afp",
+      "psa"
+    ]
+  }
+}
