@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 from typing import Optional, Dict
 from cpt_categorizer.agents.parsing import ParsingResult
-from config.directory import SCHEMA_DIR
+from cpt_categorizer.config.directory import SCHEMA_DIR
 import openai
 
 # Load category and subcategory mappings
@@ -19,8 +19,8 @@ CATEGORY_ENUM = list(SECTION_SUBSECTION_SCHEMA.keys())
 
 @dataclass
 class TaggingResult:
-    category: str
-    subcategory: str
+    section: str
+    subsection: str
     confidence: Optional[float] = None
     details: Optional[Dict[str, str]] = None
 
@@ -32,8 +32,8 @@ SECTION_CLASSIFIER_PROMPT = f"""You are a CPT classification assistant.
 
 Given a cleaned CPT description, choose the best top-level Section that fits the service.
 
-Use one of the following Sections:
-{chr(10).join(f"- {section}" for section in CATEGORY_ENUM)}
+Use one of the following Sections (with their descriptions):
+{chr(10).join(f"- {section}: {SECTION_SUBSECTION_SCHEMA[section]['description']}" for section in CATEGORY_ENUM)}
 
 If uncertain, return 'UNCAT' and explain in the note field.
 """
@@ -66,7 +66,7 @@ def tag_section(
 ) -> tuple[str, float]:
     """
     Classifies the cleaned CPT description into a top-level Section using the OpenAI API.
-    Returns the chosen category and confidence score.
+    Returns the chosen section and confidence score.
     """
     client = client or openai.OpenAI()
     response = client.chat.completions.create(
@@ -116,7 +116,7 @@ def get_subsection_function_spec(section: str) -> dict:
         "parameters": {
             "type": "object",
             "properties": {
-                "subcategory": {
+                "subsection": {
                     "type": "string",
                     "enum": enum_values,
                     "description": f"Subsection under {section}",
@@ -128,7 +128,7 @@ def get_subsection_function_spec(section: str) -> dict:
                     "description": "Confidence score for the classification",
                 },
             },
-            "required": ["subcategory", "confidence"],
+            "required": ["subsection", "confidence"],
         },
     }
 
@@ -138,7 +138,7 @@ def tag_subsection(
 ) -> tuple[str, float]:
     """
     Classifies the cleaned CPT description into a subsection under the given section using the OpenAI API.
-    Returns the chosen subcategory and confidence score.
+    Returns the chosen subsection and confidence score.
     """
     client = client or openai.OpenAI()
     prompt = get_subsection_prompt(section)
@@ -154,7 +154,7 @@ def tag_subsection(
         function_call={"name": spec["name"]},
     )
     args = json.loads(response.choices[0].message.function_call.arguments)
-    return args["subcategory"], args.get("confidence", 0.0)
+    return args["subsection"], args.get("confidence", 0.0)
 
 
 def tag_section_and_subsection(
@@ -165,11 +165,11 @@ def tag_section_and_subsection(
     first into a Section, then into a Subsection.
     Returns a TaggingResult with combined confidence.
     """
-    category, section_conf = tag_section(parsed, client)
-    subcategory, sub_conf = tag_subsection(category, parsed, client)
+    section, section_conf = tag_section(parsed, client)
+    subsection, sub_conf = tag_subsection(section, parsed, client)
     return TaggingResult(
-        category=category,
-        subcategory=subcategory,
+        section=section,
+        subsection=subsection,
         confidence=min(section_conf, sub_conf),
         details=None,
     )

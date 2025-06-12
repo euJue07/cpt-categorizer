@@ -1,4 +1,4 @@
-from cpt_categorizer.agents.parsing_agent import parse
+from cpt_categorizer.agents.parsing import parse
 
 print(
     parse(
