@@ -1,0 +1,928 @@
+{
+  "access_type": [
+    "AV_fistula",
+    "AV_graft",
+    "central_venous_catheter",
+    "peritoneal_catheter"
+  ],
+  "agent_type": [
+    "botulinum_toxin",
+    "local_anesthetic",
+    "neurolytic_agent",
+    "steroid"
+  ],
+  "airway_device": [
+    "endotracheal_tube",
+    "laryngeal_mask",
+    "nasopharyngeal_airway",
+    "oral_airway",
+    "none"
+  ],
+  "analyte": [
+    "calcium",
+    "cholesterol",
+    "creatinine",
+    "c_reactive_protein-crp",
+    "d_dimer",
+    "erythrocyte_sedimentation_rate-esr",
+    "estradiol",
+    "factor_assays",
+    "ferritin",
+    "fibrinogen",
+    "folate",
+    "free_t3",
+    "free_t4",
+    "follicle_stimulating_hormone-fsh",
+    "globulin",
+    "glucose",
+    "high_density_lipoprotein-hdl",
+    "lactate_dehydrogenase-ldh",
+    "lipid_panel",
+    "low_density_lipoprotein-ldl",
+    "lipoprotein_a-lpa",
+    "magnesium",
+    "pancreatic_enzymes",
+    "phosphate",
+    "prolactin",
+    "prostate_specific_antigen-psa",
+    "partial_thromboplastin_time-ptt",
+    "syphilis_test-rpr_vdrl",
+    "troponin_i",
+    "troponin_t",
+    "thyroid_stimulating_hormone-tsh",
+    "urine_drug_test-udt",
+    "vitamin_b12"
+  ],
+  "anatomical_region": [
+    "anus",
+    "biliary_tree",
+    "colon",
+    "duodenum",
+    "esophagus",
+    "pancreatic_duct",
+    "rectum",
+    "small_intestine",
+    "stomach"
+  ],
+  "anesthesia_level": [
+    "deep",
+    "general",
+    "light",
+    "moderate",
+    "none"
+  ],
+  "anesthesia_type": [
+    "general",
+    "local",
+    "none",
+    "regional",
+    "sedation",
+    "topical"
+  ],
+  "approach_type": [
+    "abdominal",
+    "endoscopic",
+    "endovascular",
+    "external",
+    "extraoral",
+    "intraoral",
+    "laparoscopic",
+    "manual",
+    "minimally_invasive",
+    "open",
+    "robotic",
+    "robotic_assisted",
+    "stereotactic",
+    "thoracoscopic",
+    "transvaginal",
+    "vaginal",
+    "via_natural_orifice"
+  ],
+  "body_part": [
+    "aorta",
+    "abdomen_pelvis",
+    "breast",
+    "chest",
+    "cervical_spine",
+    "elbow",
+    "esophagus",
+    "eye",
+    "face",
+    "femur",
+    "forearm",
+    "gastrostomy_site",
+    "head",
+    "humerus",
+    "knee",
+    "joint",
+    "kidney",
+    "limb",
+    "lumbar_spine",
+    "lumbosacral_spine",
+    "neck",
+    "ovary",
+    "peritoneum",
+    "peritoneal_cavity",
+    "pharynx",
+    "prostate",
+    "salivary_glands",
+    "scrotum",
+    "shoulder",
+    "spine",
+    "stomach",
+    "testis",
+    "thoracic_spine",
+    "tibia_fibula",
+    "thyroid",
+    "uterus",
+    "whole_body"
+  ],
+  "clinical_use": [
+    "oncology",
+    "prenatal_screening",
+    "pharmacogenomics"
+  ],
+  "closure_type": [
+    "delayed_primary",
+    "primary",
+    "secondary"
+  ],
+  "component_type": [
+    "whole_blood",
+    "packed_rbc",
+    "platelet"
+  ],
+  "contrast": [
+    "none",
+    "with_and_without_contrast",
+    "with_contrast",
+    "without_contrast"
+  ],
+  "counseling_type": [
+    "behavioral",
+    "genetic",
+    "nutritional"
+  ],
+  "cycle_phase": [
+    "consolidation",
+    "induction",
+    "maintenance"
+  ],
+  "delivery_phase": [
+    "cesarean_section",
+    "delivery",
+    "labor",
+    "postpartum"
+  ],
+  "delivery_type": [
+    "assisted",
+    "breech",
+    "cesarean",
+    "instrumental",
+    "vaginal"
+  ],
+  "device_used": [
+    "aspiration_kit",
+    "catheter",
+    "cement",
+    "coil",
+    "defibrillator",
+    "drain",
+    "guidewire",
+    "graft",
+    "graft_material",
+    "glaucoma_implant",
+    "guidewire",
+    "intraocular_lens",
+    "microcatheter",
+    "needle",
+    "oct_machine",
+    "pacemaker",
+    "portacath",
+    "prosthesis",
+    "radiofrequency_probe",
+    "stent",
+    "slit_lamp",
+    "visual_field_analyzer",
+    "vitrector"
+  ],
+  "documentation_type": [
+    "follow_up_plan",
+    "initial_assessment",
+    "progress_note",
+    "referral_note",
+    "screening_log"
+  ],
+  "donor_status": [
+    "deceased",
+    "living"
+  ],
+  "donor_type": [
+    "allogeneic",
+    "autologous"
+  ],
+  "doppler": [
+    "available",
+    "unavailable"
+  ],
+  "drug_delivery_method": [
+    "bolus",
+    "continuous",
+    "repeated"
+  ],
+  "drug_type": [
+    "cyclophosphamide",
+    "dacarbazine",
+    "docetaxel",
+    "gemcitabine",
+    "irrigation_solution",
+    "mechlorethamine",
+    "mitomycin",
+    "valrubicin"
+  ],
+  "duration": [
+    "acute",
+    "chronic",
+    "long_term"
+  ],
+  "equipment_used": [
+    "autoclave",
+    "bunsen_burner",
+    "centrifuge",
+    "incubator",
+    "microscope",
+    "phenol_chlorophorm"
+  ],
+  "evaluation_scope": [
+    "evaluation_of_margins",
+    "excision_completeness",
+    "frozen_section",
+    "progressive",
+    "complete"
+  ],
+  "film_size": [
+    "10x12",
+    "12x12",
+    "14x17",
+    "18x24"
+  ],
+  "fractionation": [
+    "conventional",
+    "hypofractionation",
+    "hyperfractionation"
+  ],
+  "frequency": [
+    "daily",
+    "every_other_day",
+    "follow_up",
+    "intermittent",
+    "monthly",
+    "routine",
+    "semi_annual",
+    "three_times_weekly",
+    "weekly"
+  ],
+  "goal": [
+    "awareness_raising",
+    "cognitive_improvement",
+    "disease_prevention",
+    "improve_mobility",
+    "pain_management",
+    "preventive",
+    "rehabilitation",
+    "restore_function"
+  ],
+  "goal_focus": [
+    "behavior_change",
+    "compliance_improvement",
+    "disease_prevention",
+    "risk_reduction"
+  ],
+  "guidance": [
+    "ablation",
+    "arthrogram",
+    "biopsy",
+    "ct",
+    "drainage",
+    "echocardiography",
+    "endoscopic",
+    "fluoroscopy",
+    "intraoperative_endoscopy",
+    "intraoperative_monitoring",
+    "intravascular_ultrasound",
+    "landmark",
+    "mri",
+    "no",
+    "none",
+    "radiofrequency_ablation",
+    "ultrasound",
+    "xray",
+    "yes"
+  ],
+  "imaging_view": [
+    "anteroposterior_inlet_outlet_view",
+    "anteroposterior_view",
+    "extension",
+    "flexion",
+    "foot_inverted",
+    "foot_everted",
+    "lateral",
+    "oblique",
+    "posterior_anterior_view"
+  ],
+  "indication": [
+    "abnormal_radiograph",
+    "auditory_rehabilitation",
+    "cervical_neck_mass",
+    "congenital_anomaly",
+    "dental_development",
+    "epigastric_pain",
+    "irritable_bowel_syndrome",
+    "middle_ear_effusion"
+  ],
+  "instrument_type": [
+    "curette",
+    "drill",
+    "forceps",
+    "laser",
+    "retrieval_device",
+    "snare",
+    "suture_anchor",
+    "syringe"
+  ],
+  "intervention_type": [
+    "arthrocentesis",
+    "arthroplasty",
+    "brachytherapy",
+    "bone_marrow",
+    "chemoembolization",
+    "cyst_drainage",
+    "endovascular_procedure",
+    "embolization",
+    "excision"
+  ],
+  "laterality": [
+    "bilateral",
+    "left",
+    "none",
+    "not_applicable",
+    "right"
+  ],
+  "location": [
+    "abdomen",
+    "back",
+    "buttocks",
+    "chest",
+    "face",
+    "groin",
+    "neck",
+    "scalp",
+    "shoulder",
+    "trunk",
+    "upper_extremity"
+  ],
+  "material_type": [
+    "cryoprotectant",
+    "formalin",
+    "hemacytometer",
+    "mcnemar",
+    "preservative",
+    "sharps"
+  ],
+  "measurement_type": [
+    "absolute",
+    "percentage"
+  ],
+  "method": [
+    "automated",
+    "chemiluminescence",
+    "colorimetric",
+    "flow_cytometry",
+    "immunoassay",
+    "microscopy",
+    "nephelometry",
+    "pcr",
+    "photometry",
+    "rapid_antigen",
+    "staining"
+  ],
+  "modality": [
+    "2D",
+    "3D",
+    "4D",
+    "angiogram",
+    "brachytherapy",
+    "continuous_ambulatory_peritoneal_dialysis",
+    "contrast",
+    "digital",
+    "dobutamine",
+    "dynamic",
+    "electrical_stimulation",
+    "electrophysiologic",
+    "external",
+    "flow",
+    "functional",
+    "hydrotherapy",
+    "intermittent_hemodialysis",
+    "manual",
+    "mri",
+    "nuclear",
+    "planar",
+    "plain",
+    "polysomnography",
+    "perfusion",
+    "pet",
+    "planar",
+    "stress_echo",
+    "transesophageal",
+    "ultrasound"
+  ],
+  "modality_detail": [
+    "angiogram",
+    "diffusion",
+    "duplex_ultrasound",
+    "enterography",
+    "hemodiafiltration",
+    "pediatric_ct",
+    "plain",
+    "recombinant",
+    "spect",
+    "ultrafiltration"
+  ],
+  "monitoring": [
+    "cardiac_monitoring",
+    "cbc",
+    "electrolytes",
+    "fluid_balance",
+    "infusion_reaction_monitoring",
+    "renal_function",
+    "urea",
+    "vital_signs"
+  ],
+  "monitoring_duration": [
+    "24_hour",
+    "48_hour",
+    "72_hour",
+    "7_day",
+    "14_day",
+    "30_day",
+    "continuous",
+    "event_triggered",
+    "overnight",
+    "short_term",
+    "unspecified",
+    "weekly"
+  ],
+  "monitoring_scope": [
+    "allergic_reaction",
+    "blood_pressure",
+    "cbc_monitoring",
+    "dialysate_clearance",
+    "electrolyte_balance",
+    "fluid_removal",
+    "infection_signs",
+    "side_effects",
+    "treatment_response",
+    "toxicity_assessment",
+    "vascular_access_patency"
+  ],
+  "origin_site": [
+    "heart",
+    "kidney",
+    "liver",
+    "lungs"
+  ],
+  "portable": [
+    "not_portable",
+    "portable"
+  ],
+  "pregnancy_status": [
+    "duh",
+    "first_trimester",
+    "pregnant",
+    "trimester"
+  ],
+  "preparation": [
+    "bowel_prep",
+    "enema",
+    "fasting",
+    "none",
+    "sedation_required"
+  ],
+  "preparation_type": [
+    "conventional",
+    "liquid_based"
+  ],
+  "procedure_type": [
+    "biopsy",
+    "complex_closure",
+    "debridement",
+    "drainage",
+    "extraction",
+    "fluoroscopy",
+    "impedance",
+    "injection",
+    "irrigation",
+    "intraoperative_assessment",
+    "ligament_repair",
+    "mri",
+    "nasal_dressing",
+    "nasogastric_intubation",
+    "nasoscopy",
+    "nasotracheal_extubation",
+    "needle_biopsy",
+    "nerve_monitoring",
+    "other",
+    "packing",
+    "reconstruction",
+    "radiation",
+    "rhinoscopy",
+    "rhizotomy",
+    "sealant",
+    "suture",
+    "sweat_test",
+    "tobacco_intervention"
+  ],
+  "provider_type": [
+    "advanced_practice_nurse",
+    "crna",
+    "professional",
+    "registered_nurse",
+    "resident",
+    "student"
+  ],
+  "radiotracer": [
+    "cobalt57",
+    "fluorodeoxyglucose",
+    "thallium201"
+  ],
+  "recipient_status": [
+    "alive",
+    "brain_dead",
+    "non_heart_beating"
+  ],
+  "report_type": [
+    "addendum",
+    "amended",
+    "biopsy_report",
+    "final",
+    "graphical",
+    "interpretive",
+    "numeric",
+    "narrative",
+    "photo_documentation",
+    "preliminary",
+    "supplementary",
+    "video"
+  ],
+  "restoration_scope": [
+    "full_coverage",
+    "multi_surface",
+    "single_surface"
+  ],
+  "route": [
+    "inhalational",
+    "intramuscular",
+    "intranasal",
+    "intra_arterial",
+    "intraperitoneal",
+    "intravenous",
+    "intrathecal",
+    "oral",
+    "subcutaneous",
+    "topical"
+  ],
+  "sample_type": [
+    "amniotic_fluid",
+    "blood",
+    "bone_marrow",
+    "buccal_swab",
+    "blood",
+    "csf",
+    "fine_needle_aspirate",
+    "genital_swab",
+    "peritoneal_fluid",
+    "pleural_fluid",
+    "sputum",
+    "stool",
+    "tissue",
+    "urine",
+    "whole_blood"
+  ],
+  "sedation": [
+    "deep",
+    "general",
+    "light",
+    "moderate",
+    "none"
+  ],
+  "sensor_type": [
+    "accelerometer",
+    "electroencephalography",
+    "electrooculography",
+    "electromyography",
+    "oxygen_saturation"
+  ],
+  "sequence": [
+    "axial",
+    "coronal",
+    "functional",
+    "gradient",
+    "spin_echo"
+  ],
+  "session_type": [
+    "initial",
+    "maintenance",
+    "post_consolidation"
+  ],
+  "site": [
+    "foot",
+    "face",
+    "orbit",
+    "shoulder",
+    "wrist"
+  ],
+  "sleep_phase_recorded": [
+    "light_sleep",
+    "rapid_eye_movement",
+    "deep_sleep",
+    "wakefulness"
+  ],
+  "slice_count": [
+    "16",
+    "32",
+    "64",
+    "128"
+  ],
+  "specimen_type": [
+    "biopsy",
+    "bone_marrow",
+    "body_fluid",
+    "buccal_swab",
+    "csf",
+    "mammography_tomo",
+    "saline",
+    "serum",
+    "sputum",
+    "stool",
+    "tissue",
+    "tumor_sample",
+    "urine",
+    "whole_blood"
+  ],
+  "stain_type": [
+    "acid_fast",
+    "diff_quik",
+    "gram",
+    "hematoxylin_eosin",
+    "immunocytochemistry",
+    "immunohistochemistry",
+    "pap",
+    "pas",
+    "silver_stain",
+    "trichrome",
+    "none"
+  ],
+  "staining_method": [
+    "giemsa",
+    "h_e",
+    "immunohistochemistry",
+    "oil_red_o",
+    "papanicolaou",
+    "reticulin",
+    "toluidine_blue",
+    "trichrome",
+    "ziehl_neelsen",
+    "rapid_h_e",
+    "pap_stain",
+    "pas_stain",
+    "masson_trichrome",
+    "immunofluorescence"
+  ],
+  "supportive_measures": [
+    "antibiotic_prophylaxis",
+    "anticoagulation",
+    "epoetin_administration",
+    "growth_factors",
+    "hydration",
+    "nutritional_support",
+    "pain_control",
+    "steroids"
+  ],
+  "supportive_care_included": [
+    "antibiotics",
+    "antinausea",
+    "hydration"
+  ],
+  "surgical_site": [
+    "face",
+    "neck",
+    "pelvis",
+    "scalp",
+    "trunk"
+  ],
+  "target_gene_or_locus": [
+    "BCL2",
+    "HER2",
+    "KRAS",
+    "BRCA1"
+  ],
+  "target_organ": [
+    "bone",
+    "breast",
+    "coronary_artery",
+    "gallbladder",
+    "heart",
+    "kidney",
+    "liver",
+    "lung",
+    "thyroid",
+    "whole_body"
+  ],
+  "target_population": [
+    "adolescents",
+    "adult",
+    "adults",
+    "children",
+    "geriatric",
+    "pregnant_women",
+    "pediatric",
+    "seniors",
+    "special_needs"
+  ],
+  "target_region": [
+    "brachial_plexus",
+    "cervical",
+    "femoral",
+    "lumbar",
+    "sacral",
+    "sciatic",
+    "thoracic"
+  ],
+  "target_site": [
+    "brachial_plexus",
+    "cervical",
+    "femoral",
+    "intercostal",
+    "lumbar",
+    "occipital",
+    "peripheral_nerves",
+    "sciatic",
+    "thoracic",
+    "trigeminal"
+  ],
+  "target_structure": [
+    "adrenal_gland",
+    "aorta",
+    "brain",
+    "bronchus",
+    "cervix",
+    "cochlea",
+    "colon",
+    "cornea",
+    "diaphragm",
+    "fallopian_tubes",
+    "heart_valves",
+    "intervertebral_disc",
+    "iris",
+    "kidney",
+    "lens",
+    "liver",
+    "lymph_nodes",
+    "mediastinum",
+    "middle_ear",
+    "mitral_valve",
+    "nerves",
+    "optic_nerve",
+    "ovaries",
+    "pancreas",
+    "parathyroid",
+    "pelvis",
+    "pericardium",
+    "pituitary_gland",
+    "pleura",
+    "prostate",
+    "rectum",
+    "retina",
+    "salivary_glands",
+    "spleen",
+    "testes",
+    "thymus",
+    "thyroid",
+    "tricuspid_valve",
+    "urethra",
+    "uterus"
+  ],
+  "target_vessel": [
+    "carotid_artery",
+    "coronary_artery",
+    "femoral_artery",
+    "iliac_artery",
+    "leg_veins",
+    "peripheral_veins",
+    "renal_artery"
+  ],
+  "technique": [
+    "capnography",
+    "ecg",
+    "pulse_oximetry",
+    "single_shot",
+    "train_of_four",
+    "ultrasound_guided"
+  ],
+  "test_purpose": [
+    "cataract_assessment",
+    "field_loss",
+    "glaucoma_screening",
+    "macular_degeneration_screening",
+    "optic_nerve_evaluation",
+    "refractive_error"
+  ],
+  "test_subtype": [
+    "baseline",
+    "diagnostic",
+    "follow_up",
+    "functional",
+    "preoperative",
+    "screening"
+  ],
+  "test_type": [
+    "acid_fast",
+    "allergy_testing",
+    "culture",
+    "enzyme_electrodes",
+    "immunoglobulin_levels",
+    "koelliker_fungus_test",
+    "karyotyping",
+    "routine",
+    "single_gene_assay",
+    "thyroid_function_tests"
+  ],
+  "therapist_type": [
+    "occupational_therapist",
+    "physical_therapist",
+    "speech_therapist"
+  ],
+  "tooth_type": [
+    "canine",
+    "incisor",
+    "molar",
+    "premolar"
+  ],
+  "treatment_frequency": [
+    "daily",
+    "weekly",
+    "biweekly",
+    "monthly",
+    "intensive",
+    "as_needed"
+  ],
+  "treatment_intent": [
+    "curative",
+    "palliative",
+    "preventive"
+  ],
+  "treatment_phase": [
+    "initial",
+    "maintenance",
+    "follow_up",
+    "intensification",
+    "consolidation"
+  ],
+  "treatment_site": [
+    "abdomen",
+    "breast",
+    "brain",
+    "head_and_neck",
+    "liver",
+    "lung",
+    "pelvis",
+    "prostate",
+    "spine",
+    "whole_body"
+  ],
+  "trimester": [
+    "first",
+    "second",
+    "third"
+  ],
+  "uptake_result": [
+    "decreased",
+    "increased",
+    "normal"
+  ],
+  "urgency": [
+    "routine",
+    "stat"
+  ],
+  "view_count": [
+    "1",
+    "2",
+    "3_or_more"
+  ],
+  "wound_complexity": [
+    "complex",
+    "intermediate",
+    "simple"
+  ]
+}

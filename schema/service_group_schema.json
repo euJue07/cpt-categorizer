@@ -1,0 +1,243 @@
+{
+  "sections": {
+    "anesthesiology": {
+      "description": "Management of pain and vital functions during medical procedures through various types of anesthesia.",
+      "subsections": [
+        {
+          "name": "general_anesthesia",
+          "description": "Induction of unconsciousness and loss of sensation during surgery using inhaled or intravenous agents."
+        },
+        {
+          "name": "invasive_procedures",
+          "description": "Anesthesia services associated with procedures involving significant tissue penetration or risk."
+        },
+        {
+          "name": "monitoring_anesthesia_related",
+          "description": "Continuous assessment of vital signs and anesthesia depth to ensure patient safety during procedures."
+        },
+        {
+          "name": "obstetric_anesthesia",
+          "description": "Pain relief techniques used during labor, delivery, and cesarean section."
+        },
+        {
+          "name": "surgical_anesthesia_by_region",
+          "description": "Regional techniques like spinal, epidural, or nerve blocks to anesthetize specific areas of the body."
+        }
+      ]
+    },
+    "dental": {
+      "description": "Diagnostic, preventive, and corrective procedures related to oral and dental health.",
+      "subsections": [
+        {
+          "name": "diagnostic_dental",
+          "description": "Evaluation of oral health through clinical examination, radiographs, and diagnostic tools."
+        },
+        {
+          "name": "preventive_dental",
+          "description": "Procedures that help prevent dental issues, including cleanings, sealants, and fluoride treatments."
+        },
+        {
+          "name": "restorative_dental",
+          "description": "Treatments that restore function and appearance of teeth, such as fillings and crowns."
+        },
+        {
+          "name": "oral_surgery",
+          "description": "Surgical procedures in the oral cavity including extractions and corrective jaw surgeries."
+        },
+        {
+          "name": "endodontics",
+          "description": "Dental specialty focusing on root canal treatments and diseases of dental pulp."
+        },
+        {
+          "name": "periodontics",
+          "description": "Diagnosis and treatment of gum diseases and supporting structures of the teeth."
+        },
+        {
+          "name": "prosthodontics",
+          "description": "Design and fitting of artificial replacements for teeth and other parts of the mouth."
+        },
+        {
+          "name": "orthodontics",
+          "description": "Diagnosis and correction of misaligned teeth and jaws using braces and other appliances."
+        }
+      ]
+    },
+    "laboratory": {
+      "description": "Analysis of body fluids and samples to support diagnosis, monitoring, and screening.",
+      "subsections": [
+        {
+          "name": "clinical_chemistry",
+          "description": "Analysis of chemical components in body fluids to assess organ function and disease states."
+        },
+        {
+          "name": "coagulation",
+          "description": "Evaluation of blood clotting mechanisms and coagulation disorders."
+        },
+        {
+          "name": "endocrinology",
+          "description": "Measurement of hormones and endocrine function to diagnose hormonal imbalances."
+        },
+        {
+          "name": "hematology",
+          "description": "Study of blood cells and disorders including anemia, infections, and blood cancers."
+        },
+        {
+          "name": "infectious_disease",
+          "description": "Detection of bacterial, viral, fungal, and parasitic infections in the body."
+        },
+        {
+          "name": "liver_function",
+          "description": "Testing enzymes and substances to evaluate liver health and detect liver disease."
+        },
+        {
+          "name": "renal_function",
+          "description": "Assessment of kidney performance using blood and urine tests."
+        },
+        {
+          "name": "urinalysis",
+          "description": "Examination of urine for signs of systemic or urinary tract diseases."
+        },
+        {
+          "name": "vitamins_nutrition",
+          "description": "Analysis of vitamin and nutritional levels to assess deficiencies or imbalances."
+        },
+        {
+          "name": "inflammatory_markers",
+          "description": "Measurement of substances indicating inflammation in the body."
+        },
+        {
+          "name": "immunology",
+          "description": "Evaluation of immune system function and autoimmune disorders."
+        },
+        {
+          "name": "iron_studies",
+          "description": "Tests measuring iron levels and metabolism, important in diagnosing anemia."
+        }
+      ]
+    },
+    "specialty": {
+      "description": "Non-surgical, organ-based clinical disciplines such as cardiology, neurology, and psychiatry.",
+      "subsections": [
+        {
+          "name": "cardiology",
+          "description": "Diagnosis and treatment of heart and cardiovascular conditions."
+        },
+        {
+          "name": "pulmonology",
+          "description": "Focus on lung and respiratory system disorders."
+        },
+        {
+          "name": "neurology",
+          "description": "Diagnosis and treatment of brain, spinal cord, and nervous system disorders."
+        },
+        {
+          "name": "psychiatry",
+          "description": "Assessment and management of mental health conditions and behavioral disorders."
+        },
+        {
+          "name": "rehabilitation",
+          "description": "Therapeutic interventions to restore function and mobility after illness or injury."
+        },
+        {
+          "name": "urology",
+          "description": "Management of urinary tract and male reproductive health conditions."
+        },
+        {
+          "name": "ophthalmology",
+          "description": "Medical and surgical care of the eyes and vision system."
+        },
+        {
+          "name": "obstetrics_gynecology",
+          "description": "Care related to female reproductive health, pregnancy, and childbirth."
+        }
+      ]
+    },
+    "pathology": {
+      "description": "Microscopic and laboratory analysis of tissues, cells, and bodily fluids for disease diagnosis.",
+      "subsections": [
+        {
+          "name": "histopathology",
+          "description": "Examination of tissue samples under a microscope to study disease manifestations and cellular changes."
+        },
+        {
+          "name": "cytopathology",
+          "description": "Study of individual cell samples, typically for cancer diagnosis or infectious screening."
+        },
+        {
+          "name": "molecular_pathology",
+          "description": "Analysis of DNA, RNA, and proteins to detect genetic and molecular abnormalities in diseases."
+        },
+        {
+          "name": "microbiology",
+          "description": "Isolation and identification of microorganisms such as bacteria, fungi, and viruses in body specimens."
+        },
+        {
+          "name": "blood_bank_transfusion",
+          "description": "Testing, preparation, and provision of blood products for transfusion purposes."
+        }
+      ]
+    },
+    "imaging": {
+      "description": "Diagnostic techniques that create visual representations of the internal structures of the body.",
+      "subsections": [
+        {
+          "name": "xray",
+          "description": "Imaging using X-rays to visualize bones, chest, and other dense structures."
+        },
+        {
+          "name": "ultrasound",
+          "description": "Diagnostic imaging using sound waves to create real-time images of internal organs, vessels, and fetuses."
+        },
+        {
+          "name": "ct_scan",
+          "description": "Cross-sectional imaging using computed tomography to provide detailed anatomical views."
+        },
+        {
+          "name": "mri",
+          "description": "Magnetic resonance imaging using magnetic fields and radio waves to produce detailed body images."
+        },
+        {
+          "name": "nuclear_medicine",
+          "description": "Imaging using small amounts of radioactive material to assess function and structure of organs."
+        }
+      ]
+    },
+    "procedures": {
+      "description": "Invasive and non-invasive clinical interventions including surgical and therapeutic treatments.",
+      "subsections": [
+        {
+          "name": "minor_procedures",
+          "description": "Simple, low-risk interventions typically performed in outpatient settings or clinics."
+        },
+        {
+          "name": "major_procedures",
+          "description": "Invasive surgical operations often requiring anesthesia and inpatient care."
+        },
+        {
+          "name": "laparoscopic_procedures",
+          "description": "Minimally invasive surgeries performed through small incisions using a laparoscope."
+        },
+        {
+          "name": "endoscopic_procedures",
+          "description": "Procedures involving insertion of a flexible scope to visualize and treat internal organs."
+        },
+        {
+          "name": "organ_specific_procedures",
+          "description": "Surgical interventions targeting specific organs, such as kidney, liver, or gallbladder."
+        },
+        {
+          "name": "vascular_procedures",
+          "description": "Interventions focused on treating conditions affecting blood vessels and circulation."
+        },
+        {
+          "name": "orthopedic_procedures",
+          "description": "Surgeries involving bones, joints, ligaments, and musculoskeletal system."
+        },
+        {
+          "name": "neurosurgery_procedures",
+          "description": "Surgical treatments of the brain, spine, and nervous system."
+        }
+      ]
+    }
+  }
+}
