@@ -6,6 +6,7 @@ from cpt_categorizer.config.openai import GPT4O_COST_INPUT, GPT4O_COST_OUTPUT
 def log_agent_usage(
     timestamp,
     raw_text,
+    description,
     parsed_output,
     prompt_tokens,
     completion_tokens,
@@ -23,6 +24,7 @@ def log_agent_usage(
     Args:
         timestamp (str): Timestamp of the call.
         raw_text (str): The original raw input.
+        description (str): Short description of the call (e.g., "classify_sections", "classify_subsections", etc.).
         parsed_output (str): Cleaned output from the agent.
         prompt_tokens (int or str): Number of prompt tokens.
         completion_tokens (int or str): Number of completion tokens.
@@ -50,6 +52,7 @@ def log_agent_usage(
                 [
                     "timestamp",
                     "raw_text",
+                    "description",
                     "parsed_output",
                     "prompt_tokens",
                     "completion_tokens",
@@ -67,6 +70,7 @@ def log_agent_usage(
             [
                 timestamp,
                 raw_text,
+                description,
                 parsed_output,
                 prompt_tokens,
                 completion_tokens,

@@ -74,6 +74,15 @@ class TaggingAgent:
         self.service_group_dimension_schema = service_group_dimension_schema
         self.service_group_dimension_value_schema = service_group_dimension_value_schema
 
+        # Normalize subsection schema if provided as a list
+        for section in self.service_group_schema.get("sections", {}).values():
+            if isinstance(section.get("subsections"), list):
+                section["subsections"] = {
+                    sub["name"]: {"description": sub.get("description", "")}
+                    for sub in section["subsections"]
+                    if "name" in sub
+                }
+
         # Load section, subsection, and detail schema (now unified)
         self.sections = list(self.service_group_schema["sections"].keys())
 
@@ -92,10 +101,15 @@ class TaggingAgent:
         self.section_function_specification["parameters"]["properties"]["sections"][
             "items"
         ]["properties"]["section"]["enum"] = self.sections
+        self._cache_sections = {}
+        self._cache_subsections = {}
+        self._cache_section_calls = {}
+        self._cache_subsection_calls = {}
 
     def classify_sections(
         self,
         text_description: str,
+        confidence_threshold: float = 0.5,
     ) -> List[Tuple[str, float]]:
         """
         Classifies a CPT description into plausible top-level medical Sections using the OpenAI API.
@@ -107,6 +121,13 @@ class TaggingAgent:
             List[Tuple[str, float]]: A list of tuples, each containing a section name and its associated confidence score.
         """
         import logging
+
+        normalized_text = text_description.strip().lower()
+        if normalized_text in self._cache_sections:
+            self._cache_section_calls[normalized_text] = (
+                self._cache_section_calls.get(normalized_text, 0) + 1
+            )
+            return self._cache_sections[normalized_text]
 
         request_id = str(uuid.uuid4())
         success = False
@@ -130,7 +151,7 @@ class TaggingAgent:
                         function_call={"name": "select_sections"},
                     )
                     break  # If successful, exit the retry loop
-                except (RateLimitError, APIConnectionError, APITimeoutError) as e:
+                except (RateLimitError, APIConnectionError, APITimeoutError):
                     if attempt < 2:
                         time.sleep(2**attempt)
                         continue
@@ -144,8 +165,10 @@ class TaggingAgent:
                     (item["section"], item.get("confidence", 0.0))
                     for item in parsed_args.get("sections", [])
                     if item["section"] in self.sections
+                    and item.get("confidence", 0.0) >= confidence_threshold
                 ]
                 result = validated
+                self._cache_sections[normalized_text] = result
             except Exception:
                 logging.getLogger(__name__).warning(
                     "Failed to parse OpenAI function_call arguments. request_id=%s\nRaw function_call: %s",
@@ -184,6 +207,7 @@ class TaggingAgent:
                 is_error=not success,
                 error_message=error_message,
                 request_id=request_id,
+                description="classify_sections",
             )
         return result
 
@@ -272,6 +296,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         self,
         section: str,
         text_description: str,
+        confidence_threshold: float = 0.5,
     ) -> List[Tuple[str, float]]:
         """
         Classifies a CPT description into plausible subsections under a given section using the OpenAI API.
@@ -284,6 +309,14 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             List[Tuple[str, float]]: A list of tuples, each containing a subsection name and its associated confidence score.
         """
         import logging
+
+        normalized_text = text_description.strip().lower()
+        key = (section, normalized_text)
+        if key in self._cache_subsections:
+            self._cache_subsection_calls[key] = (
+                self._cache_subsection_calls.get(key, 0) + 1
+            )
+            return self._cache_subsections[key]
 
         request_id = str(uuid.uuid4())
         success = False
@@ -314,7 +347,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
                         },
                     )
                     break  # If successful, exit the retry loop
-                except (RateLimitError, APIConnectionError, APITimeoutError) as e:
+                except (RateLimitError, APIConnectionError, APITimeoutError):
                     if attempt < 2:
                         time.sleep(2**attempt)
                         continue
@@ -338,7 +371,9 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
                     (item["subsection"], item.get("confidence", 0.0))
                     for item in parsed_args.get("subsections", [])
                     if item["subsection"] in valid_keys
+                    and item.get("confidence", 0.0) >= confidence_threshold
                 ]
+                self._cache_subsections[key] = result
             except Exception:
                 logging.getLogger(__name__).warning(
                     "Failed to parse OpenAI function_call arguments. request_id=%s\nRaw function_call: %s",
@@ -377,10 +412,13 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
                 is_error=not success,
                 error_message=error_message,
                 request_id=request_id,
+                description=f"classify_subsections:{section}",
             )
         return result
 
-    def generate_tags(self, text_description: str) -> List[dict]:
+    def generate_tags(
+        self, text_description: str, confidence_threshold: float = 0.5
+    ) -> List[dict]:
         """
         Generates section and subsection tags for a CPT description.
 
@@ -391,11 +429,17 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             List[dict]: A list of dictionaries containing section, subsection, confidence, and placeholder details.
         """
         tags = []
-        candidate_sections = self.classify_sections(text_description)
-        print("Sections:", candidate_sections)
+        candidate_sections = self.classify_sections(
+            text_description, confidence_threshold=confidence_threshold
+        )
+        if not candidate_sections:
+            return []
         for section, sec_conf in candidate_sections:
-            candidate_subsections = self.classify_subsections(section, text_description)
-            print("Subsections for", section, ":", candidate_subsections)
+            candidate_subsections = self.classify_subsections(
+                section, text_description, confidence_threshold=confidence_threshold
+            )
+            if not candidate_subsections:
+                continue
             for subsection, sub_conf in candidate_subsections:
                 combined_conf = min(sec_conf, sub_conf)
                 tags.append(

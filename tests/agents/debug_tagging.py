@@ -1,6 +1,5 @@
 import json
 import pandas as pd
-from pathlib import Path
 
 from cpt_categorizer.agents.tagging import TaggingAgent
 from cpt_categorizer.config.directory import RAW_DIR
