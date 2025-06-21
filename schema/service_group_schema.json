@@ -66,52 +66,40 @@
       "description": "Analysis of body fluids and samples to support diagnosis, monitoring, and screening.",
       "subsections": [
         {
-          "name": "clinical_chemistry",
-          "description": "Analysis of chemical components in body fluids to assess organ function and disease states."
-        },
-        {
-          "name": "coagulation",
-          "description": "Evaluation of blood clotting mechanisms and coagulation disorders."
-        },
-        {
-          "name": "endocrinology",
-          "description": "Measurement of hormones and endocrine function to diagnose hormonal imbalances."
+          "name": "chemistry",
+          "description": "Includes general chemistry tests and specialized panels such as liver, renal, electrolyte, and enzyme analysis."
         },
         {
           "name": "hematology",
-          "description": "Study of blood cells and disorders including anemia, infections, and blood cancers."
+          "description": "Tests related to blood composition, including complete blood count, differential count, and coagulation studies."
         },
         {
-          "name": "infectious_disease",
-          "description": "Detection of bacterial, viral, fungal, and parasitic infections in the body."
-        },
-        {
-          "name": "liver_function",
-          "description": "Testing enzymes and substances to evaluate liver health and detect liver disease."
-        },
-        {
-          "name": "renal_function",
-          "description": "Assessment of kidney performance using blood and urine tests."
-        },
-        {
-          "name": "urinalysis",
-          "description": "Examination of urine for signs of systemic or urinary tract diseases."
-        },
-        {
-          "name": "vitamins_nutrition",
-          "description": "Analysis of vitamin and nutritional levels to assess deficiencies or imbalances."
-        },
-        {
-          "name": "inflammatory_markers",
-          "description": "Measurement of substances indicating inflammation in the body."
+          "name": "endocrinology",
+          "description": "Hormonal analysis including thyroid, diabetes-related, and other hormone-level assessments."
         },
         {
           "name": "immunology",
-          "description": "Evaluation of immune system function and autoimmune disorders."
+          "description": "Assessment of immune function, including autoantibody detection, allergy panels, and general immune profiling."
         },
         {
-          "name": "iron_studies",
-          "description": "Tests measuring iron levels and metabolism, important in diagnosing anemia."
+          "name": "infectious_disease",
+          "description": "Identification of pathogens including viral, bacterial, and parasitic agents."
+        },
+        {
+          "name": "urine_based_testing",
+          "description": "Analysis of urine specimens for urinalysis, microalbumin levels, and urinary electrolytes."
+        },
+        {
+          "name": "nutritional_assessment",
+          "description": "Evaluation of vitamin and mineral levels to detect deficiencies or nutritional imbalances."
+        },
+        {
+          "name": "inflammatory_assays",
+          "description": "Tests that measure inflammatory markers such as CRP, ESR, and calprotectin."
+        },
+        {
+          "name": "specialized_panels",
+          "description": "Advanced diagnostic panels including iron studies, metabolic profiles, and tumor markers."
         }
       ]
     },
@@ -206,36 +194,40 @@
       "description": "Invasive and non-invasive clinical interventions including surgical and therapeutic treatments.",
       "subsections": [
         {
-          "name": "minor_procedures",
-          "description": "Simple, low-risk interventions typically performed in outpatient settings or clinics."
+          "name": "minor_clinical_procedures",
+          "description": "Low-risk, outpatient procedures such as injections, wound care, and simple excisions."
         },
         {
-          "name": "major_procedures",
-          "description": "Invasive surgical operations often requiring anesthesia and inpatient care."
+          "name": "major_surgical_procedures",
+          "description": "Invasive surgical operations typically requiring anesthesia and operating room facilities."
         },
         {
-          "name": "laparoscopic_procedures",
-          "description": "Minimally invasive surgeries performed through small incisions using a laparoscope."
+          "name": "laparo_endoscopic_procedures",
+          "description": "Minimally invasive procedures using scopes such as laparoscopy and endoscopy."
         },
         {
-          "name": "endoscopic_procedures",
-          "description": "Procedures involving insertion of a flexible scope to visualize and treat internal organs."
+          "name": "organ_targeted_procedures",
+          "description": "Surgical interventions focused on specific organs like the kidney, liver, or gallbladder."
         },
         {
-          "name": "organ_specific_procedures",
-          "description": "Surgical interventions targeting specific organs, such as kidney, liver, or gallbladder."
+          "name": "vascular_interventions",
+          "description": "Procedures addressing conditions of the arteries, veins, and circulatory system."
         },
         {
-          "name": "vascular_procedures",
-          "description": "Interventions focused on treating conditions affecting blood vessels and circulation."
+          "name": "musculoskeletal_surgery",
+          "description": "Orthopedic procedures involving bones, joints, and connective tissue structures."
         },
         {
-          "name": "orthopedic_procedures",
-          "description": "Surgeries involving bones, joints, ligaments, and musculoskeletal system."
+          "name": "neurosurgical_interventions",
+          "description": "Surgeries performed on the brain, spine, or peripheral nervous system."
         },
         {
-          "name": "neurosurgery_procedures",
-          "description": "Surgical treatments of the brain, spine, and nervous system."
+          "name": "therapeutic_non_surgical",
+          "description": "Non-surgical treatments such as dialysis, radiation therapy, ESWL, and chemotherapy."
+        },
+        {
+          "name": "reproductive_procedures",
+          "description": "Procedures involving reproductive health, such as vasectomy and tubal ligation."
         }
       ]
     }

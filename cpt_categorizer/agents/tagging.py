@@ -16,8 +16,7 @@ Your task is to classify a CPT description into the most appropriate top-level S
 Use the following Section names as your guide. Base your judgment on the clinical domain and nature of the service:
 {sections_str}
 Return a list of plausible sections with confidence scores between 0 and 1.
-
-Output a JSON array of objects with fields: 'section' and 'confidence'.
+If the service clearly does not fall under any of the listed categories, you may assign "others".
 """
 
 SECTION_FUNCTION_SPECIFICATION_TEMPLATE = {
@@ -84,10 +83,10 @@ class TaggingAgent:
                 }
 
         # Load section, subsection, and detail schema (now unified)
-        self.sections = list(self.service_group_schema["sections"].keys())
+        self.sections = list(self.service_group_schema["sections"].keys()) + ["others"]
 
         self.sections_str = "\n".join(
-            f"- {section}: {self.service_group_schema['sections'][section].get('description', '')}"
+            f"- {section}: {self.service_group_schema['sections'].get(section, {}).get('description', '')}"
             for section in self.sections
         )
 
@@ -98,6 +97,7 @@ class TaggingAgent:
         self.section_function_specification = (
             SECTION_FUNCTION_SPECIFICATION_TEMPLATE.copy()
         )
+        # Ensure "others" is included in the enum for valid section names
         self.section_function_specification["parameters"]["properties"]["sections"][
             "items"
         ]["properties"]["section"]["enum"] = self.sections
@@ -237,6 +237,7 @@ Choose from the following options:
 {formatted}
 
 Return a list of plausible subsections with confidence scores between 0 and 1.
+If no appropriate subsection fits, you may assign "others".
 Output a JSON array of objects with fields: 'subsection' and 'confidence'.
 """
 
@@ -311,6 +312,8 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         import logging
 
         normalized_text = text_description.strip().lower()
+        if section == "others":
+            return [("others", 1.0)]
         key = (section, normalized_text)
         if key in self._cache_subsections:
             self._cache_subsection_calls[key] = (
@@ -416,6 +419,27 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             )
         return result
 
+    def classify_dimensions(
+        self,
+        section: str,
+        subsection: str,
+        text_description: str,
+    ) -> dict:
+        """
+        Extracts structured dimension details for a given CPT description under a specific section and subsection.
+
+        Args:
+            section (str): The section name.
+            subsection (str): The subsection name.
+            text_description (str): The original CPT description.
+
+        Returns:
+            dict: A dictionary where keys are dimension names and values are lists of extracted tags.
+        """
+        # TODO: Implement prompt generation and OpenAI call
+        # Example return value for now
+        return {}
+
     def generate_tags(
         self, text_description: str, confidence_threshold: float = 0.5
     ) -> List[dict]:
@@ -433,15 +457,29 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             text_description, confidence_threshold=confidence_threshold
         )
         if not candidate_sections:
-            return []
+            return [
+                {
+                    "section": "others",
+                    "subsection": "others",
+                    "confidence": 1.0,
+                    "details": {},
+                }
+            ]
         for section, sec_conf in candidate_sections:
             candidate_subsections = self.classify_subsections(
                 section, text_description, confidence_threshold=confidence_threshold
             )
             if not candidate_subsections:
-                continue
+                tags.append(
+                    {
+                        "section": section,
+                        "subsection": "others",
+                        "confidence": sec_conf,
+                        "details": {},
+                    }
+                )
             for subsection, sub_conf in candidate_subsections:
-                combined_conf = min(sec_conf, sub_conf)
+                combined_conf = (sec_conf + sub_conf) / 2
                 tags.append(
                     {
                         "section": section,
@@ -480,3 +518,8 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         This should be replaced or mocked during testing.
         """
         return self.client.chat.completions.create(**kwargs)
+
+
+# Add json for cache
+# Add "others" for section and subsection
+# Implement detail tagging
