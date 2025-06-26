@@ -1,0 +1,568 @@
+{
+  "analyte": {
+    "description": "Represents the specific chemical substance or biomarker measured in a laboratory test or clinical exam.",
+    "values": [
+      "albumin",
+      "alkaline_phosphatase",
+      "alanine_aminotransferase",
+      "ammonia",
+      "amylase",
+      "bicarbonate",
+      "bilirubin",
+      "blood_ethanol",
+      "blood_urea_nitrogen",
+      "calcium",
+      "chloride",
+      "cholesterol",
+      "creatinine",
+      "estradiol",
+      "ferritin",
+      "fibrinogen",
+      "glucose",
+      "hemoglobin",
+      "kale",
+      "lipase",
+      "lactate",
+      "ldh",
+      "magnesium",
+      "creatine_kinase",
+      "blood_gas",
+      "magnesium_urine",
+      "platelet_count",
+      "potassium",
+      "sodium",
+      "amylase_urine",
+      "blood_pH",
+      "calcium_ionized",
+      "clotting_factors",
+      "co2_content",
+      "cortisol",
+      "crp",
+      "estradiol",
+      "ferritin",
+      "fibrinogen",
+      "alk_phos",
+      "ldh",
+      "potassium_urine",
+      "sodium_urine",
+      "triglycerides",
+      "vitamin_d",
+      "hemoglobin_a1c",
+      "thyroxine",
+      "triiodothyronine",
+      "thyroid_stimulating_hormone",
+      "prostate_specific_antigen",
+      "blood_type"
+    ]
+  },
+  "anatomic_site": {
+    "description": "Indicates the specific location or region of the body where a procedure or service is performed.",
+    "values": [
+      "abdomen",
+      "ankle",
+      "arm",
+      "artery",
+      "axilla",
+      "back",
+      "bile_duct",
+      "bladder",
+      "brain",
+      "breast",
+      "bronchus",
+      "calf",
+      "cervical",
+      "chest",
+      "cornea",
+      "cortex",
+      "cystic_duct",
+      "ear",
+      "elbow",
+      "esophagus",
+      "eye",
+      "femur",
+      "finger",
+      "foot",
+      "forearm",
+      "frontal_lobe",
+      "gallbladder",
+      "gastrointestinal_tract",
+      "gingiva",
+      "glans",
+      "groin",
+      "hand",
+      "heart",
+      "hip",
+      "humerus",
+      "inguinal",
+      "kidney",
+      "knee",
+      "larynx",
+      "leg",
+      "liver",
+      "lung",
+      "metatarsals",
+      "mouth",
+      "musculoskeletal_system",
+      "nasal",
+      "neck",
+      "nerve",
+      "oesophagus",
+      "oropharynx",
+      "ovary",
+      "pancreas",
+      "penis",
+      "pelvis",
+      "pericardium",
+      "peritoneum",
+      "peritoneum",
+      "phalanx",
+      "placenta",
+      "pleura",
+      "prostate",
+      "pulmonary",
+      "radius",
+      "rectum",
+      "renal_system",
+      "respiratory",
+      "retina",
+      "rib",
+      "skin",
+      "skull",
+      "spinal_cord",
+      "spleen",
+      "sternum",
+      "stomach",
+      "subclavian",
+      "testis",
+      "thoracic_duct",
+      "throat",
+      "thyroid",
+      "tooth",
+      "trachea",
+      "ulna",
+      "umbilicus",
+      "ureter",
+      "uterus",
+      "vascular_system",
+      "vulva"
+    ]
+  },
+  "approach": {
+    "description": "Defines the surgical or procedural technique used to access the body (e.g., open, laparoscopic, endoscopic).",
+    "values": [
+      "arterial",
+      "ascending",
+      "axonometric",
+      "bronchial",
+      "conjoined",
+      "flexor",
+      "lacrimal",
+      "laparoscopic",
+      "left",
+      "major",
+      "medial",
+      "micro",
+      "minimally_invasive",
+      "nasal",
+      "open",
+      "orbitotomy",
+      "other",
+      "posterior",
+      "percutaneous",
+      "pulmonary",
+      "robotic",
+      "sentinel",
+      "somatosensory",
+      "thoracoscopic",
+      "urinary",
+      "vascular",
+      "verbal",
+      "transrectal",
+      "transvaginal"
+    ]
+  },
+  "assessment_tool": {
+    "description": "Specifies the tool or instrument used in psychological or functional assessment (e.g., cognitive test, hearing test).",
+    "values": [
+      "cognitive_assessment",
+      "psychometric_test",
+      "visual_field_test",
+      "audiometry",
+      "spirometry",
+      "menstrual_diary"
+    ]
+  },
+  "contrast": {
+    "description": "Indicates whether contrast media was used during an imaging procedure (values: with_contrast, without_contrast, both).",
+    "values": [
+      "both",
+      "with_contrast",
+      "without_contrast"
+    ]
+  },
+  "component_type": {
+    "description": "Specifies the type of blood product used in transfusion or transfusion preparation.",
+    "values": [
+      "cryoprecipitate",
+      "fresh_frozen_plasma",
+      "granulocytes",
+      "irradiated_products",
+      "platelets",
+      "packed_red_cells",
+      "whole_blood"
+    ]
+  },
+  "donor_status": {
+    "description": "Indicates the type or relationship of the blood donor (e.g., volunteer, autologous).",
+    "values": [
+      "autologous",
+      "directed",
+      "paid",
+      "replacement",
+      "volunteer"
+    ]
+  },
+  "recipient_status": {
+    "description": "Specifies the recipient's condition or match status for transfusions (e.g., crossmatched, emergency).",
+    "values": [
+      "crossmatched",
+      "emergency_release",
+      "group_specific",
+      "type_and_screen_only"
+    ]
+  },
+  "device_type": {
+    "description": "Specifies the type of instrument, implant, or equipment used in a procedure.",
+    "values": [
+      "catheter",
+      "defibrillator",
+      "doppler_probe",
+      "endoscope",
+      "guidewire",
+      "implantable_device",
+      "laser_device",
+      "monitor",
+      "pacemaker",
+      "pressure_monito",
+      "scope",
+      "stent",
+      "ultrasound_probe"
+    ]
+  },
+  "delivery_phase": {
+    "description": "Specifies the stage of labor or delivery (e.g., first_stage, second_stage, third_stage, postpartum).",
+    "values": [
+      "first_stage",
+      "postpartum",
+      "second_stage",
+      "third_stage"
+    ]
+  },
+  "diagnostic_tool": {
+    "description": "Specifies the device or test used for diagnosis in a specialty (e.g., echocardiogram, spirometry).",
+    "values": [
+      "angiography",
+      "echocardiogram",
+      "electrocardiogram",
+      "holter_monitor",
+      "imaging",
+      "spirometry",
+      "stress_test",
+      "audiometry"
+    ]
+  },
+  "duration": {
+    "description": "Indicates the expected time span or chronicity of a condition or treatment.",
+    "values": [
+      "acute",
+      "chronic"
+    ]
+  },
+  "evaluation_scope": {
+    "description": "Specifies the extent of pathological evaluation (e.g., limited, complete, frozen_section).",
+    "values": [
+      "complete",
+      "frozen_section",
+      "limited"
+    ]
+  },
+  "frequency": {
+    "description": "Describes how often a test, therapy, or evaluation is performed.",
+    "values": [
+      "annual",
+      "biannual",
+      "daily",
+      "monthly",
+      "once",
+      "quarterly",
+      "weekly",
+      "yearly"
+    ]
+  },
+  "goal": {
+    "description": "Specifies the therapeutic intent or functional goal (e.g., rehabilitation, preventive, pain_management).",
+    "values": [
+      "awareness_raising",
+      "cognitive_improvement",
+      "disease_prevention",
+      "pain_management",
+      "preventive",
+      "rehabilitation",
+      "restore_function"
+    ]
+  },
+  "imaging_view": {
+    "description": "Specifies the projection or angle used during radiographic imaging (e.g., anteroposterior_view, lateral, oblique).",
+    "values": [
+      "anteroposterior_inlet_outlet_view",
+      "anteroposterior_view",
+      "extension",
+      "flexion",
+      "foot_everted",
+      "foot_inverted",
+      "lateral",
+      "oblique",
+      "posterior_anterior_view"
+    ]
+  },
+  "laterality": {
+    "description": "Indicates the side of body involved in a procedure (left, right, bilateral, not_applicable).",
+    "values": [
+      "bilateral",
+      "left",
+      "not_applicable",
+      "right"
+    ]
+  },
+  "material_type": {
+    "description": "Specifies the type of material used in dental restorative procedures (e.g., composite, amalgam).",
+    "values": [
+      "amalgam",
+      "ceramic",
+      "composite",
+      "fiber_post",
+      "glass_ionomer",
+      "gold_alloy",
+      "porcelain",
+      "temporary_filling"
+    ]
+  },
+  "test_purpose": {
+    "description": "Defines the clinical objective for ordering a test (e.g., screening, diagnostic, monitoring).",
+    "values": [
+      "confirmation",
+      "diagnosis",
+      "follow_up",
+      "monitoring",
+      "prognosis",
+      "screening",
+      "staging"
+    ]
+  },
+  "test_type": {
+    "description": "Classifies the diagnostic test based on its method or technology (e.g., culture, immunoassay, genetic_test).",
+    "values": [
+      "allergy_test",
+      "biopsy_exam",
+      "coagulation_test",
+      "culture",
+      "electrophysiology_test",
+      "functional_test",
+      "genetic_test",
+      "hormone_panel",
+      "imaging_study",
+      "immunoassay",
+      "molecular",
+      "metabolic_panel",
+      "microscopy",
+      "metabolic_panel",
+      "neurocognitive_assessment",
+      "tox_screen",
+      "lipid_panel",
+      "urinalysis",
+      "cytology"
+    ]
+  },
+  "therapy_type": {
+    "description": "Describes non-surgical therapeutic interventions (e.g., dialysis, chemotherapy, infusion).",
+    "values": [
+      "chemotherapy",
+      "infusion_bolus",
+      "infusion_continuous",
+      "infusion_intermittent",
+      "dialysis",
+      "radiation_therapy"
+    ]
+  },
+  "therapist_type": {
+    "description": "Specifies the type of therapist providing rehabilitation services (e.g., physical, occupational).",
+    "values": [
+      "occupational_therapist",
+      "physical_therapist",
+      "speech_therapist"
+    ]
+  },
+  "urgency": {
+    "description": "Indicates the priority level of a test or procedure (e.g., routine, stat).",
+    "values": [
+      "routine",
+      "stat"
+    ]
+  },
+  "anesthesia_type": {
+    "description": "Classifies the type of anesthesia administered during a procedure (e.g., general, regional, local).",
+    "values": [
+      "conscious_sedation",
+      "epidural",
+      "general",
+      "local",
+      "nerve_block",
+      "regional",
+      "sedation",
+      "spinal",
+      "topical"
+    ]
+  },
+  "vaccine_type": {
+    "description": "Specifies the antigen or type of vaccine administered for immunization.",
+    "values": [
+      "influenza",
+      "rabies",
+      "tetanus_immunoglobulin",
+      "tetanus_toxoid",
+      "other"
+    ]
+  },
+  "organism_target": {
+    "description": "Specifies the type of pathogen or organism targeted by a test or therapy (e.g., bacteria, virus).",
+    "values": [
+      "bacteria",
+      "fungus",
+      "mycobacteria",
+      "parasite",
+      "virus"
+    ]
+  },
+  "tooth_type": {
+    "description": "Identifies the category or position of the tooth involved in a dental procedure (e.g., molar, incisor).",
+    "values": [
+      "canine",
+      "incisor",
+      "left",
+      "lower",
+      "molar",
+      "premolar",
+      "primary_tooth",
+      "right",
+      "upper",
+      "wisdom_tooth"
+    ]
+  },
+  "view_count": {
+    "description": "Indicates the number of imaging views captured during a radiology exam (e.g., single_view, dual_view).",
+    "values": [
+      "dual_view",
+      "multiple_views",
+      "single_view",
+      "triple_view"
+    ]
+  },
+  "slice_count": {
+    "description": "Specifies the number of slices or cross-sectional images in a CT or MRI scan.",
+    "values": [
+      "128_slice",
+      "256_slice",
+      "320_slice",
+      "64_slice",
+      "multi_slice",
+      "single_slice"
+    ]
+  },
+  "specimen_type": {
+    "description": "Specifies the type of biological specimen collected for testing (e.g., biopsy, blood, CSF).",
+    "values": [
+      "body_fluid",
+      "bone_marrow",
+      "buccal_swab",
+      "biopsy",
+      "csf",
+      "genital_swab",
+      "other",
+      "peritoneal_fluid",
+      "pleural_fluid",
+      "swab",
+      "urine"
+    ]
+  },
+  "restoration_scope": {
+    "description": "Indicates the extent of a dental restoration (e.g., single_surface, full_mouth).",
+    "values": [
+      "full_mouth",
+      "single_surface",
+      "three_surfaces",
+      "two_surfaces"
+    ]
+  },
+  "procedure_type": {
+    "description": "Indicates the nature of a clinical procedure or service (e.g., screening, diagnostic, therapeutic).",
+    "values": [
+      "screening",
+      "diagnostic",
+      "therapeutic"
+    ]
+  },
+  "method": {
+    "description": "Specifies the route or method used for a procedure or treatment (e.g., oral, intravenous, inhalation, intramuscular).",
+    "values": [
+      "oral",
+      "intravenous",
+      "inhalation",
+      "intramuscular"
+    ]
+  },
+  "target_population": {
+    "description": "Specifies the patient population or demographic targeted by a service or screening (e.g., pediatric, adult, geriatric).",
+    "values": [
+      "pediatric",
+      "adult",
+      "geriatric"
+    ]
+  },
+  "scope_type": {
+    "description": "Specifies the type of endoscopic scope used in a procedure (e.g., colonoscope, gastroscope).",
+    "values": [
+      "colonoscope",
+      "gastroscope"
+    ]
+  },
+  "uptake_result": {
+    "description": "Indicates the outcome of radiotracer uptake in a nuclear medicine scan (e.g., normal, increased, decreased, absent).",
+    "values": [
+      "normal",
+      "increased",
+      "decreased",
+      "absent"
+    ]
+  },
+  "target_gene_or_locus": {
+    "description": "Specifies the gene or genomic locus targeted by a molecular diagnostic test (e.g., BRCA1, EGFR).",
+    "values": [
+      "alk",
+      "braf",
+      "brca1",
+      "brca2",
+      "egfr",
+      "er",
+      "her2",
+      "jak2",
+      "kras",
+      "msh2",
+      "msh6",
+      "myc",
+      "nras",
+      "pms2",
+      "pr",
+      "ros1"
+    ]
+  }
+}

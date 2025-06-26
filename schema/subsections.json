@@ -1,0 +1,452 @@
+{
+  "anesthesiology": {
+    "general_anesthesia": {
+      "description": "Induction of complete unconsciousness using inhalational or intravenous agents, typically for major surgeries.",
+      "dimensions": [
+        "device_type",
+        "procedure_type"
+      ]
+    },
+    "regional_anesthesia": {
+      "description": "Anesthesia targeting a specific region of the body (e.g., spinal, epidural, nerve blocks) without loss of consciousness.",
+      "dimensions": [
+        "anatomic_site",
+        "procedure_type",
+        "method"
+      ]
+    },
+    "local_anesthesia": {
+      "description": "Anesthesia applied to a localized part of the body, typically by infiltration at the surgical site or skin area.",
+      "dimensions": [
+        "anatomic_site",
+        "procedure_type",
+        "method"
+      ]
+    },
+    "sedation": {
+      "description": "Administration of sedative medications to reduce patient anxiety or consciousness level (conscious sedation).",
+      "dimensions": [
+        "procedure_type",
+        "anesthesia_type"
+      ]
+    },
+    "obstetric_anesthesia": {
+      "description": "Anesthesia for obstetric patients (e.g., labor and delivery anesthesia).",
+      "dimensions": [
+        "delivery_phase",
+        "procedure_type",
+        "anesthesia_type",
+        "method"
+      ]
+    }
+  },
+  "dental": {
+    "dental_diagnostics": {
+      "description": "Dental examination and imaging (e.g., X-rays) for diagnosis of oral health issues.",
+      "dimensions": [
+        "imaging_view",
+        "anatomic_site",
+        "test_type"
+      ]
+    },
+    "preventive_dental": {
+      "description": "Procedures that help prevent dental issues, including cleanings, sealants, and fluoride treatments.",
+      "dimensions": [
+        "frequency",
+        "procedure_type",
+        "target_population"
+      ]
+    },
+    "restorative_dental": {
+      "description": "Dental procedures for restoring tooth structure (e.g., fillings, crowns, root canals).",
+      "dimensions": [
+        "material_type",
+        "procedure_type",
+        "restoration_scope",
+        "tooth_type"
+      ]
+    },
+    "oral_surgery": {
+      "description": "Surgical procedures in the oral cavity, including extractions, biopsies, and corrective surgeries.",
+      "dimensions": [
+        "anatomic_site",
+        "procedure_type",
+        "device_type",
+        "laterality"
+      ]
+    },
+    "endodontics": {
+      "description": "Dental procedures involving the inner tooth (e.g., root canal therapy).",
+      "dimensions": [
+        "tooth_type",
+        "procedure_type",
+        "device_type"
+      ]
+    },
+    "periodontics": {
+      "description": "Dental services focusing on the gums and supporting structures of teeth.",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "prosthodontics": {
+      "description": "Fabrication and fitting of dental prostheses (e.g., dentures, bridges).",
+      "dimensions": [
+        "procedure_type",
+        "material_type"
+      ]
+    },
+    "orthodontics": {
+      "description": "Dental alignment procedures (e.g., braces, orthodontic appliances).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    }
+  },
+  "laboratory": {
+    "chemistry": {
+      "description": "Chemical analysis of body fluids (e.g., blood glucose, electrolytes, metabolic panels).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "hematology": {
+      "description": "Tests related to blood cells and components (e.g., CBC, platelet count, hemoglobin).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "endocrinology": {
+      "description": "Hormonal assays (e.g., thyroid hormones, insulin, cortisol).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "immunology": {
+      "description": "Tests for immune response (e.g., antibody titers, autoantibodies).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "urine_based_testing": {
+      "description": "Tests performed on urine samples (e.g., urinalysis, pregnancy test).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "inflammatory_assays": {
+      "description": "Tests measuring inflammatory markers (e.g., CRP, ESR).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "specialized_panels": {
+      "description": "Multi-analyte panels or specialized lab tests (e.g., lipid panel, metabolic panel).",
+      "dimensions": [
+        "analyte",
+        "test_type"
+      ]
+    },
+    "microbiology": {
+      "description": "Culture and identification of microbes (e.g., blood culture, stool culture).",
+      "dimensions": [
+        "test_type",
+        "organism_target"
+      ]
+    },
+    "coagulation": {
+      "description": "Tests related to blood clotting (e.g., PT, INR, APTT).",
+      "dimensions": [
+        "test_type",
+        "analyte"
+      ]
+    },
+    "toxicology": {
+      "description": "Screening for toxins and drugs of abuse in blood or urine.",
+      "dimensions": [
+        "test_type"
+      ]
+    }
+  },
+  "medical_specialties": {
+    "cardiology": {
+      "description": "Heart-related diagnosis and management (e.g., ECG, echocardiograms, cardiac catheterization).",
+      "dimensions": [
+        "procedure_type",
+        "diagnostic_tool",
+        "anatomic_site"
+      ]
+    },
+    "pulmonology": {
+      "description": "Respiratory system disorders and lung function tests (e.g., spirometry).",
+      "dimensions": [
+        "procedure_type",
+        "diagnostic_tool",
+        "anatomic_site"
+      ]
+    },
+    "neurology": {
+      "description": "Nervous system evaluation (e.g., EEG, EMG, nerve conduction studies).",
+      "dimensions": [
+        "procedure_type",
+        "diagnostic_tool",
+        "anatomic_site"
+      ]
+    },
+    "psychiatry": {
+      "description": "Mental health evaluations and therapy (e.g., psychological assessment).",
+      "dimensions": [
+        "procedure_type",
+        "assessment_tool"
+      ]
+    },
+    "rehabilitation": {
+      "description": "Therapeutic interventions (e.g., physical therapy, occupational therapy) to restore function.",
+      "dimensions": [
+        "goal",
+        "therapist_type",
+        "frequency"
+      ]
+    },
+    "urology": {
+      "description": "Genitourinary system diagnosis and interventions (e.g., prostate exam, cystoscopy).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "ophthalmology": {
+      "description": "Eye and vision care (e.g., eye exam, ophthalmic surgery).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "obstetrics_gynecology": {
+      "description": "Women's reproductive health (e.g., prenatal care, delivery, gynecologic exams).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "delivery_phase"
+      ]
+    },
+    "dermatology": {
+      "description": "Skin-related diagnosis and treatment (e.g., biopsies, excision of lesions).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "gastroenterology": {
+      "description": "Digestive system procedures (e.g., endoscopy, colonoscopy).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "scope_type"
+      ]
+    },
+    "otolaryngology": {
+      "description": "Ear, nose, and throat (ENT) services (e.g., audiometry, sinus surgery).",
+      "dimensions": [
+        "procedure_type",
+        "diagnostic_tool",
+        "anatomic_site"
+      ]
+    },
+    "nephrology": {
+      "description": "Kidney-related care (e.g., dialysis, kidney biopsy).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "therapy_type"
+      ]
+    },
+    "rheumatology": {
+      "description": "Autoimmune and musculoskeletal disorders (e.g., joint injections).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    }
+  },
+  "pathology": {
+    "histopathology": {
+      "description": "Microscopic examination of tissues (e.g., surgical biopsy analysis).",
+      "dimensions": [
+        "test_type",
+        "evaluation_scope"
+      ]
+    },
+    "cytopathology": {
+      "description": "Examination of cells (e.g., Pap smear, fine needle aspiration cytology).",
+      "dimensions": [
+        "test_type",
+        "evaluation_scope"
+      ]
+    },
+    "molecular_pathology": {
+      "description": "Genetic and molecular diagnostic testing (e.g., PCR, genomic assays).",
+      "dimensions": [
+        "test_type",
+        "target_gene_or_locus"
+      ]
+    },
+    "blood_bank_transfusion": {
+      "description": "Blood product preparation and transfusion services.",
+      "dimensions": [
+        "component_type",
+        "donor_status",
+        "recipient_status"
+      ]
+    }
+  },
+  "imaging": {
+    "xray": {
+      "description": "X-ray radiography procedures.",
+      "dimensions": [
+        "imaging_view",
+        "view_count",
+        "contrast"
+      ]
+    },
+    "ultrasound": {
+      "description": "Ultrasound imaging procedures (sonography).",
+      "dimensions": [
+        "anatomic_site",
+        "procedure_type",
+        "imaging_view",
+        "contrast"
+      ]
+    },
+    "ct_scan": {
+      "description": "Computed tomography (CT) imaging scans.",
+      "dimensions": [
+        "anatomic_site",
+        "slice_count",
+        "contrast"
+      ]
+    },
+    "mri": {
+      "description": "Magnetic resonance imaging (MRI) scans.",
+      "dimensions": [
+        "anatomic_site",
+        "slice_count",
+        "contrast"
+      ]
+    },
+    "nuclear_medicine": {
+      "description": "Nuclear medicine scans (e.g., PET, SPECT).",
+      "dimensions": [
+        "anatomic_site",
+        "uptake_result",
+        "contrast"
+      ]
+    }
+  },
+  "procedures": {
+    "minor_clinical_procedures": {
+      "description": "Minor procedures (e.g., wound closure, biopsies, injections) typically done under local anesthesia.",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "device_type"
+      ]
+    },
+    "major_surgical_procedures": {
+      "description": "Major surgeries requiring significant intervention (e.g., laparotomy, joint replacement).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "approach"
+      ]
+    },
+    "laparo_endoscopic_procedures": {
+      "description": "Minimally invasive laparoscopic or endoscopic surgeries.",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "scope_type"
+      ]
+    },
+    "organ_targeted_procedures": {
+      "description": "Procedures targeting specific organs (e.g., transplant, excision of entire organ).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "vascular_interventions": {
+      "description": "Procedures on the vascular system (e.g., angioplasty, stent placement, vascular grafts).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "device_type",
+        "approach"
+      ]
+    },
+    "musculoskeletal_surgery": {
+      "description": "Surgery on bones, joints, muscles, and connective tissues.",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site",
+        "device_type"
+      ]
+    },
+    "neurosurgical_interventions": {
+      "description": "Brain and spine surgeries.",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    },
+    "therapeutic_non_surgical": {
+      "description": "Non-surgical therapeutic interventions (e.g., infusion therapy, dialysis).",
+      "dimensions": [
+        "therapy_type",
+        "method",
+        "anatomic_site"
+      ]
+    },
+    "reproductive_procedures": {
+      "description": "Gynecologic and obstetric surgical procedures (e.g., hysterectomy, tubal ligation).",
+      "dimensions": [
+        "procedure_type",
+        "anatomic_site"
+      ]
+    }
+  },
+  "preventive_medicine": {
+    "immunizations": {
+      "description": "Administration of vaccines to prevent diseases and infections.",
+      "dimensions": [
+        "procedure_type",
+        "target_population",
+        "vaccine_type"
+      ]
+    },
+    "health_screening": {
+      "description": "Screening tests and evaluations to detect diseases or risk factors early.",
+      "dimensions": [
+        "test_type",
+        "procedure_type",
+        "anatomic_site",
+        "target_population"
+      ]
+    },
+    "counseling_services": {
+      "description": "Health education and counseling (e.g., diet, lifestyle) for disease prevention and wellness.",
+      "dimensions": [
+        "procedure_type",
+        "target_population"
+      ]
+    }
+  }
+}

@@ -8,17 +8,17 @@ import inspect
 from cpt_categorizer.agents import tagging
 
 print(inspect.getfile(tagging.TaggingAgent))
-with open(SCHEMA_DIR / "service_group_schema.json") as f:
-    service_group_schema = json.load(f)
-with open(SCHEMA_DIR / "service_group_dimension_schema.json") as f:
-    service_group_dimension_schema = json.load(f)
-with open(SCHEMA_DIR / "service_group_dimension_value_schema.json") as f:
-    service_group_dimension_value_schema = json.load(f)
+with open(SCHEMA_DIR / "sections.json") as f:
+    section_schema = json.load(f)
+with open(SCHEMA_DIR / "subsections.json") as f:
+    subsection_schema = json.load(f)
+with open(SCHEMA_DIR / "dimensions.json") as f:
+    dimension_schema = json.load(f)
 
 shared_agent = TaggingAgent(
-    service_group_schema=service_group_schema,
-    service_group_dimension_schema=service_group_dimension_schema,
-    service_group_dimension_value_schema=service_group_dimension_value_schema,
+    section_schema=section_schema,
+    subsection_schema=subsection_schema,
+    dimension_schema=dimension_schema,
 )
 
 
@@ -53,6 +53,10 @@ def run_from_csv_sample(n=5, pattern=None):
 
 
 if __name__ == "__main__":
+    from cpt_categorizer.config.openai import OPENAI_MODEL
+
+    print(f"[DEBUG] Configured model: {OPENAI_MODEL}")
+
     print("Select mode:")
     print("1 - Type a CPT description manually")
     print("2 - Sample from CSV file")

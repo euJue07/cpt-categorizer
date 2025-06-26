@@ -1,0 +1,99 @@
+{
+  "anesthesiology": {
+    "description": "Medical specialty dedicated to anesthesia administration and perioperative patient care, including pain management.",
+    "subsections": [
+      "general_anesthesia",
+      "regional_anesthesia",
+      "local_anesthesia",
+      "sedation",
+      "obstetric_anesthesia"
+    ]
+  },
+  "dental": {
+    "description": "Clinical dentistry services focusing on prevention, diagnosis, and treatment of diseases affecting the teeth and oral cavity.",
+    "subsections": [
+      "dental_diagnostics",
+      "preventive_dental",
+      "restorative_dental",
+      "oral_surgery",
+      "endodontics",
+      "periodontics",
+      "prosthodontics",
+      "orthodontics"
+    ]
+  },
+  "laboratory": {
+    "description": "Laboratory analysis of clinical specimens (blood, urine, tissues, etc.) for the diagnosis and monitoring of disease.",
+    "subsections": [
+      "chemistry",
+      "hematology",
+      "endocrinology",
+      "immunology",
+      "urine_based_testing",
+      "inflammatory_assays",
+      "specialized_panels",
+      "microbiology",
+      "coagulation",
+      "toxicology"
+    ]
+  },
+  "medical_specialties": {
+    "description": "Medical specialties focusing on the diagnosis and management of disorders in specific organ systems or patient populations.",
+    "subsections": [
+      "cardiology",
+      "pulmonology",
+      "neurology",
+      "psychiatry",
+      "rehabilitation",
+      "urology",
+      "ophthalmology",
+      "obstetrics_gynecology",
+      "dermatology",
+      "gastroenterology",
+      "otolaryngology",
+      "nephrology",
+      "rheumatology"
+    ]
+  },
+  "pathology": {
+    "description": "Analysis of tissues, cells, and bodily fluids (microscopically and in lab) to diagnose disease.",
+    "subsections": [
+      "histopathology",
+      "cytopathology",
+      "molecular_pathology",
+      "blood_bank_transfusion"
+    ]
+  },
+  "imaging": {
+    "description": "Diagnostic imaging techniques (e.g., X-ray, CT, MRI, ultrasound) to visualize internal body structures.",
+    "subsections": [
+      "xray",
+      "ultrasound",
+      "ct_scan",
+      "mri",
+      "nuclear_medicine"
+    ]
+  },
+  "procedures": {
+    "description": "Clinical interventions, including surgical operations and other therapeutic procedures.",
+    "subsections": [
+      "minor_clinical_procedures",
+      "major_surgical_procedures",
+      "laparo_endoscopic_procedures",
+      "organ_targeted_procedures",
+      "vascular_interventions",
+      "musculoskeletal_surgery",
+      "neurosurgical_interventions",
+      "therapeutic_non_surgical",
+      "reproductive_procedures"
+    ]
+  },
+  "preventive_medicine": {
+    "description": "Preventive healthcare services including immunizations, screenings, and wellness counseling.",
+    "subsections": [
+      "immunizations",
+      "health_screening",
+      "counseling_services"
+    ]
+  }
+}

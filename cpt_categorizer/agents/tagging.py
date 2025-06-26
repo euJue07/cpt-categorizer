@@ -11,17 +11,46 @@ from cpt_categorizer.config.openai import OPENAI_MODEL
 from cpt_categorizer.utils.logging import log_agent_usage
 
 
-SECTION_PROMPT_TEMPLATE = """You are a medical classification expert specializing in CPT tagging.
-Your task is to classify a CPT description into the most appropriate top-level Sections for medical services.
-Use the following Section names as your guide. Base your judgment on the clinical domain and nature of the service:
+SECTION_PROMPT_TEMPLATE = """You are a medical classification expert for CPT tagging.
+
+Given the CPT description below, identify the relevant top-level medical Sections based on the clinical domain and type of service.
+
+Available Sections:
 {sections_str}
-Return a list of plausible sections with confidence scores between 0 and 1.
-If the service clearly does not fall under any of the listed categories, you may assign "others".
+
+Instructions:
+- Select one or more applicable sections based on the nature of the procedure.
+- Assign a confidence score (0–1) to each.
+- If the procedure clearly does not match any section, assign "others".
+- Prioritize precision over guessing. Avoid selecting too many sections unless truly justified.
+
+Return a JSON object with a list of section-confidence pairs.
+"""
+
+# Dimension extraction prompt template
+DIMENSION_PROMPT_TEMPLATE = """You are a medical tagging assistant extracting structured dimension values from CPT descriptions.
+
+Given:
+- Section: {section}
+- Subsection: {subsection}
+- CPT Description: {text_description}
+- Allowed Dimensions: {allowed_dimensions}
+- Enum Values per Dimension:
+{dimension_str}
+
+Instructions:
+1. For each allowed dimension, extract any matching values from the description. Use enum values if matched exactly, and place them under "actual".
+2. If a value seems to match a known dimension but isn't in its enum, place it under "proposed → existing_dimensions", and make sure its key is in snake_case.
+3. If a value relates to a new concept not in any known dimension, propose a dimension name in snake_case and place it under "proposed → new_dimensions".
+4. Each value must include both "value" and "confidence", and confidence must be ≥ 0.5.
+5. Do not include explanatory text or any fields other than the required schema.
+
+Return a JSON object matching the expected structure.
 """
 
 SECTION_FUNCTION_SPECIFICATION_TEMPLATE = {
     "name": "select_sections",
-    "description": "Classifies a text description into multiple Sections with confidence scores",
+    "description": "Returns the most relevant top-level medical Sections for a CPT description, each with a confidence score.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -32,14 +61,14 @@ SECTION_FUNCTION_SPECIFICATION_TEMPLATE = {
                     "properties": {
                         "section": {
                             "type": "string",
-                            "enum": [],  # To be filled dynamically
-                            "description": "Top-level Section",
+                            "enum": [],  # Filled dynamically
+                            "description": "Top-level medical section name.",
                         },
                         "confidence": {
                             "type": "number",
                             "minimum": 0.0,
                             "maximum": 1.0,
-                            "description": "Confidence score for the classification",
+                            "description": "Confidence score for this section.",
                         },
                     },
                     "required": ["section", "confidence"],
@@ -59,34 +88,42 @@ class TaggingAgent:
     structured classification schemas for healthcare services.
     """
 
+    def _to_snake_case(self, name: str) -> str:
+        import re
+
+        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).replace(" ", "_").lower()
+
+    def _normalize_proposed_value(self, s: str) -> str:
+        import re
+
+        s = s.strip().lower()
+        s = re.sub(
+            r"[^\w\s]", "_", s
+        )  # Replace non-alphanumeric characters with underscores
+        s = re.sub(r"\s+", "_", s)  # Replace spaces with underscores
+        s = re.sub(r"_+", "_", s)  # Collapse multiple underscores
+        return s.strip("_")
+
     def __init__(
         self,
-        service_group_schema: dict,
-        service_group_dimension_schema: Optional[dict] = None,
-        service_group_dimension_value_schema: Optional[dict] = None,
+        section_schema: dict,
+        subsection_schema: Optional[dict] = None,
+        dimension_schema: Optional[dict] = None,
         client: Optional[openai.OpenAI] = None,
     ):
         self.client = client or openai.OpenAI()
 
         # Assign schemas from parameters
-        self.service_group_schema = service_group_schema
-        self.service_group_dimension_schema = service_group_dimension_schema
-        self.service_group_dimension_value_schema = service_group_dimension_value_schema
-
-        # Normalize subsection schema if provided as a list
-        for section in self.service_group_schema.get("sections", {}).values():
-            if isinstance(section.get("subsections"), list):
-                section["subsections"] = {
-                    sub["name"]: {"description": sub.get("description", "")}
-                    for sub in section["subsections"]
-                    if "name" in sub
-                }
+        self.section_schema = section_schema
+        self.subsection_schema = subsection_schema
+        self.dimension_schema = dimension_schema
 
         # Load section, subsection, and detail schema (now unified)
-        self.sections = list(self.service_group_schema["sections"].keys()) + ["others"]
+        self.sections = list(self.section_schema.keys()) + ["others"]
 
         self.sections_str = "\n".join(
-            f"- {section}: {self.service_group_schema['sections'].get(section, {}).get('description', '')}"
+            f"- {section}: {self.section_schema.get(section, {}).get('description', '')}"
             for section in self.sections
         )
 
@@ -167,7 +204,15 @@ class TaggingAgent:
                     if item["section"] in self.sections
                     and item.get("confidence", 0.0) >= confidence_threshold
                 ]
-                result = validated
+                # Deduplicate the list of section-confidence tuples
+                seen = set()
+                deduped = []
+                for section, confidence in validated:
+                    key = (section, confidence)
+                    if key not in seen:
+                        deduped.append((section, confidence))
+                        seen.add(key)
+                result = deduped
                 self._cache_sections[normalized_text] = result
             except Exception:
                 logging.getLogger(__name__).warning(
@@ -191,7 +236,7 @@ class TaggingAgent:
             log_agent_usage(
                 timestamp=datetime.now().isoformat(),
                 raw_text=text_description,
-                parsed_output="{}",
+                parsed_output=json.dumps(result),
                 prompt_tokens=getattr(response.usage, "prompt_tokens", 0)
                 if success and response
                 else 0,
@@ -212,33 +257,25 @@ class TaggingAgent:
         return result
 
     def _get_subsection_prompt(self, section: str) -> str:
-        """
-        Constructs a prompt to classify subsections for a given section.
+        subsection_keys = self.section_schema.get(section, {}).get("subsections", [])
+        formatted = "\n".join(
+            f"- {key}: {self.subsection_schema.get(section, {}).get(key, {}).get('description', '')}"
+            for key in subsection_keys
+        )
+        return f"""You are a medical classification expert for CPT tagging.
 
-        Args:
-            section (str): The section under which to classify subsections.
+Given the CPT description below and its assigned Section: {section}, identify the most appropriate Subsections based on clinical content.
 
-        Returns:
-            str: A formatted prompt string including the subsection options.
-        """
-        section_data = self.service_group_schema["sections"].get(section, {})
-        subsection_definitions = section_data.get("subsections", {})
-        if isinstance(subsection_definitions, dict):
-            formatted = "\n".join(
-                f"- {key}: {value.get('description', '')}"
-                for key, value in subsection_definitions.items()
-            )
-        else:
-            formatted = "\n".join(f"- {item}" for item in subsection_definitions)
-        return f"""You are a medical classification expert specializing in CPT tagging.
-Given a CPT description and its assigned Section: {section}, identify the most appropriate Subsections based on clinical content.
-
-Choose from the following options:
+Available Subsections:
 {formatted}
 
-Return a list of plausible subsections with confidence scores between 0 and 1.
-If no appropriate subsection fits, you may assign "others".
-Output a JSON array of objects with fields: 'subsection' and 'confidence'.
+Instructions:
+- Select one or more applicable subsections based on the clinical details.
+- Assign a confidence score (0–1) to each.
+- If none apply, assign "others".
+- Prioritize accuracy over coverage.
+
+Return a JSON object containing a list of subsection-confidence pairs.
 """
 
     def _get_subsection_function_specification(self, section: str) -> dict:
@@ -251,11 +288,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         Returns:
             dict: A dictionary representing the JSON schema for allowed subsections under the section.
         """
-        subsections_raw = (
-            self.service_group_schema["sections"]
-            .get(section, {})
-            .get("subsections", {})
-        )
+        subsections_raw = self.section_schema.get(section, {}).get("subsections", {})
         enum_values = (
             list(subsections_raw.keys())
             if isinstance(subsections_raw, dict)
@@ -264,7 +297,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
 
         return {
             "name": f"select_subsections_for_{section.lower()}",
-            "description": f"Classifies text description into multiple subsections under {section} with confidence scores",
+            "description": f"Returns the most relevant Subsections under the section '{section}' with confidence scores.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -282,7 +315,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
                                     "type": "number",
                                     "minimum": 0.0,
                                     "maximum": 1.0,
-                                    "description": "Confidence score for the classification",
+                                    "description": "Confidence score for this subsection.",
                                 },
                             },
                             "required": ["subsection", "confidence"],
@@ -360,10 +393,8 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
                 parsed_args = json.loads(
                     response.choices[0].message.function_call.arguments
                 )
-                valid_subsections = (
-                    self.service_group_schema["sections"]
-                    .get(section, {})
-                    .get("subsections", {})
+                valid_subsections = self.section_schema.get(section, {}).get(
+                    "subsections", {}
                 )
                 valid_keys = (
                     list(valid_subsections.keys())
@@ -399,7 +430,7 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             log_agent_usage(
                 timestamp=datetime.now().isoformat(),
                 raw_text=text_description,
-                parsed_output="{}",
+                parsed_output=json.dumps(result),
                 prompt_tokens=getattr(response.usage, "prompt_tokens", 0)
                 if success and response
                 else 0,
@@ -428,17 +459,237 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         """
         Extracts structured dimension details for a given CPT description under a specific section and subsection.
 
-        Args:
-            section (str): The section name.
-            subsection (str): The subsection name.
-            text_description (str): The original CPT description.
-
         Returns:
-            dict: A dictionary where keys are dimension names and values are lists of extracted tags.
+            dict: A structured output with actual and proposed dimensions as per specification.
         """
-        # TODO: Implement prompt generation and OpenAI call
-        # Example return value for now
-        return {}
+        import logging
+        import time
+        from datetime import datetime
+        import uuid
+
+        start = time.time()
+        response = None
+        actual_dimensions = None
+        proposed_existing_dimensions = None
+        proposed_new_dimensions = None
+        e = None
+
+        # If no dimension schema provided, return empty
+        if not self.subsection_schema or not self.dimension_schema:
+            return {
+                "actual": {},
+                "proposed": {
+                    "existing_dimensions": {},
+                    "new_dimensions": {},
+                },
+            }
+
+        # Use the self.subsection_schema to fetch allowed dimensions for the current subsection.
+        allowed_dimensions = (
+            self.subsection_schema.get(section, {})
+            .get(subsection, {})
+            .get("dimensions", [])
+        )
+        if not allowed_dimensions:
+            return {
+                "actual": {},
+                "proposed": {
+                    "existing_dimensions": {},
+                    "new_dimensions": {},
+                },
+            }
+
+        # Format dimension values for prompt
+        dimension_enum_map = {
+            dim: self.dimension_schema.get(dim, {}).get("values", [])
+            for dim in allowed_dimensions
+        }
+
+        prompt = DIMENSION_PROMPT_TEMPLATE.format(
+            section=section,
+            subsection=subsection,
+            text_description=text_description,
+            allowed_dimensions=", ".join(allowed_dimensions),
+            dimension_str="\n".join(
+                f"- {dim}: {', '.join(values)}"
+                for dim, values in dimension_enum_map.items()
+            ),
+        )
+
+        function_spec = {
+            "name": "extract_dimensions",
+            "description": "Extract dimension values from a CPT description and organize them into actual (matched), proposed existing, and proposed new dimensions.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "actual": {
+                        "type": "object",
+                        "description": "Values that match known enums for each allowed dimension.",
+                        "properties": {
+                            dim: {
+                                "type": "array",
+                                "description": self.dimension_schema.get(dim, {}).get(
+                                    "description", ""
+                                ),
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "enum": enum_values,
+                                        },
+                                        "confidence": {
+                                            "type": "number",
+                                            "minimum": 0,
+                                            "maximum": 1,
+                                        },
+                                    },
+                                    "required": ["value", "confidence"],
+                                },
+                            }
+                            for dim, enum_values in dimension_enum_map.items()
+                        },
+                        "required": [],
+                    },
+                    "proposed": {
+                        "type": "object",
+                        "description": "Values that either don't match the known enums or suggest new dimension names.",
+                        "properties": {
+                            "existing_dimensions": {
+                                "type": "object",
+                                "description": "Values that likely belong to known dimensions but aren't in the enum.",
+                                "properties": {
+                                    dim: {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "value": {"type": "string"},
+                                                "confidence": {
+                                                    "type": "number",
+                                                    "minimum": 0,
+                                                    "maximum": 1,
+                                                },
+                                            },
+                                            "required": ["value", "confidence"],
+                                        },
+                                    }
+                                    for dim in allowed_dimensions
+                                },
+                                "required": [],
+                            },
+                            "new_dimensions": {
+                                "type": "object",
+                                "description": "Suggested new dimensions inferred from leftover text.",
+                                "additionalProperties": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "value": {"type": "string"},
+                                            "confidence": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 1,
+                                            },
+                                        },
+                                        "required": ["value", "confidence"],
+                                    },
+                                },
+                            },
+                        },
+                        "required": [],
+                    },
+                },
+                "required": ["actual", "proposed"],
+            },
+        }
+
+        try:
+            response = self._call_openai_completion(
+                model=OPENAI_MODEL,
+                temperature=0,
+                messages=[
+                    {"role": "system", "content": prompt},
+                ],
+                functions=[function_spec],
+                function_call={"name": "extract_dimensions"},
+            )
+            parsed_args = json.loads(
+                response.choices[0].message.function_call.arguments
+            )
+            # Parse according to new schema
+            actual_dimensions = parsed_args.get("actual", {})
+            proposed = parsed_args.get("proposed", {})
+            proposed_existing_dimensions = proposed.get("existing_dimensions", {})
+            proposed_new_dimensions = proposed.get("new_dimensions", {})
+            # Normalize proposed keys and values
+            proposed_existing_dimensions = {
+                self._normalize_proposed_value(k): [
+                    {
+                        "value": self._normalize_proposed_value(v["value"]),
+                        "confidence": v["confidence"],
+                    }
+                    for v in vals
+                ]
+                for k, vals in proposed_existing_dimensions.items()
+            }
+            proposed_new_dimensions = {
+                self._normalize_proposed_value(k): [
+                    {
+                        "value": self._normalize_proposed_value(v["value"]),
+                        "confidence": v["confidence"],
+                    }
+                    for v in vals
+                ]
+                for k, vals in proposed_new_dimensions.items()
+            }
+        except Exception as exc:
+            e = exc
+            logging.getLogger(__name__).warning(f"Dimension tagging failed: {e}")
+            actual_dimensions = {}
+            proposed_existing_dimensions = {}
+            proposed_new_dimensions = {}
+        finally:
+            end = time.time()
+            log_agent_usage(
+                timestamp=datetime.now().isoformat(),
+                raw_text=text_description,
+                parsed_output=json.dumps(
+                    {
+                        "actual": actual_dimensions,
+                        "proposed": {
+                            "existing_dimensions": proposed_existing_dimensions,
+                            "new_dimensions": proposed_new_dimensions,
+                        },
+                    }
+                ),
+                prompt_tokens=getattr(response.usage, "prompt_tokens", 0)
+                if "response" in locals() and response
+                else 0,
+                completion_tokens=getattr(response.usage, "completion_tokens", 0)
+                if "response" in locals() and response
+                else 0,
+                total_tokens=getattr(response.usage, "total_tokens", 0)
+                if "response" in locals() and response
+                else 0,
+                model=getattr(response, "model", "")
+                if "response" in locals() and response
+                else "",
+                runtime_ms=int((time.time() - start) * 1000),
+                success="actual_dimensions" in locals(),
+                is_error="actual_dimensions" not in locals(),
+                error_message=str(e) if "e" in locals() else "",
+                request_id=str(uuid.uuid4()),
+                description=f"classify_dimensions:{section}/{subsection}",
+            )
+        return {
+            "actual": actual_dimensions,
+            "proposed": {
+                "existing_dimensions": proposed_existing_dimensions,
+                "new_dimensions": proposed_new_dimensions,
+            },
+        }
 
     def generate_tags(
         self, text_description: str, confidence_threshold: float = 0.5
@@ -450,44 +701,87 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
             text_description (str): The CPT description to classify.
 
         Returns:
-            List[dict]: A list of dictionaries containing section, subsection, confidence, and placeholder details.
+            List[dict]: A list of dictionaries containing section, subsection, confidence, and structured dimension details.
         """
+        if not text_description or not text_description.strip():
+            return []
         tags = []
         candidate_sections = self.classify_sections(
             text_description, confidence_threshold=confidence_threshold
         )
         if not candidate_sections:
-            return [
-                {
-                    "section": "others",
-                    "subsection": "others",
-                    "confidence": 1.0,
-                    "details": {},
-                }
-            ]
+            return []
         for section, sec_conf in candidate_sections:
             candidate_subsections = self.classify_subsections(
                 section, text_description, confidence_threshold=confidence_threshold
             )
             if not candidate_subsections:
-                tags.append(
-                    {
-                        "section": section,
-                        "subsection": "others",
-                        "confidence": sec_conf,
-                        "details": {},
-                    }
-                )
+                continue
             for subsection, sub_conf in candidate_subsections:
-                combined_conf = (sec_conf + sub_conf) / 2
-                tags.append(
-                    {
-                        "section": section,
-                        "subsection": subsection,
-                        "confidence": combined_conf,
-                        "details": {},  # Placeholder for future detail tagging
-                    }
-                )
+                # Compute max confidence from all dimension values
+                max_dim_conf = 0
+                actual_dimensions = {}
+                if subsection != "others":
+                    dimension_struct = self.classify_dimensions(
+                        section, subsection, text_description
+                    )
+                    # Unpack as per revised schema: actual is a dict of dimensions
+                    actual_dimensions = dimension_struct.get("actual", {})
+                    # Gather all confidences from all dimension values
+                    all_dimension_confs = []
+                    for values in actual_dimensions.values():
+                        all_dimension_confs.extend(
+                            [
+                                v["confidence"]
+                                for v in values
+                                if isinstance(v, dict) and "confidence" in v
+                            ]
+                        )
+                    max_dim_conf = (
+                        max(all_dimension_confs) if all_dimension_confs else 0
+                    )
+                # Average section, subsection, and max dimension confidence
+                if subsection != "others":
+                    combined_conf = (sec_conf + sub_conf + max_dim_conf) / 3
+                else:
+                    combined_conf = (sec_conf + sub_conf) / 2
+                if subsection != "others":
+                    proposed_existing = dimension_struct.get("proposed", {}).get(
+                        "existing_dimensions", {}
+                    )
+                    proposed_new = dimension_struct.get("proposed", {}).get(
+                        "new_dimensions", {}
+                    )
+                    tags.append(
+                        {
+                            "section": section,
+                            "subsection": subsection,
+                            "confidence": combined_conf,
+                            "dimensions": {
+                                "actual": actual_dimensions,
+                                "proposed": {
+                                    "existing_dimensions": proposed_existing,
+                                    "new_dimensions": proposed_new,
+                                },
+                            },
+                        }
+                    )
+                else:
+                    # For "others", output dimensions as per updated schema
+                    tags.append(
+                        {
+                            "section": section,
+                            "subsection": subsection,
+                            "confidence": combined_conf,
+                            "dimensions": {
+                                "actual": {},
+                                "proposed": {
+                                    "existing_dimensions": {},
+                                    "new_dimensions": {},
+                                },
+                            },
+                        }
+                    )
         return tags
 
     def tag_entry(
@@ -505,7 +799,28 @@ Output a JSON array of objects with fields: 'subsection' and 'confidence'.
         Returns:
             dict: A dictionary containing the code, description, and classification tags.
         """
-        tags = self.generate_tags(text_description)
+        tags = []
+        generated_tags = self.generate_tags(text_description)
+        for tag in generated_tags:
+            # For "others", fill all fields for consistency
+            if tag.get("subsection") == "others":
+                tags.append(
+                    {
+                        "section": tag.get("section"),
+                        "subsection": tag.get("subsection"),
+                        "confidence": tag.get("confidence"),
+                        "dimensions": {},
+                    }
+                )
+            else:
+                tags.append(
+                    {
+                        "section": tag.get("section"),
+                        "subsection": tag.get("subsection"),
+                        "confidence": tag.get("confidence"),
+                        "dimensions": tag.get("dimensions", {}),
+                    }
+                )
         return {
             "code": code,
             "description": text_description,

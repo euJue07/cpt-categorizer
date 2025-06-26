@@ -1,8 +1,0 @@
-batch,section,subsection,dimension,value,type,accept,key, description
-1,laboratory,endocrinology,analyte,hemoglobin_a1c-hba1c,add,Y,8133,"HBA1C (GLYCOSYLATED HEMOGLOBIN)"
-1,laboratory,clinical_chemistry,analyte,triglycerides,add,Y,9863,"LIPID PROFILE (INCLUSIONS TOTAL CHOLESTEROL, HDL, LDL, TRIGLYCERIDES)"
-1,laboratory,liver_function,analyte,alanine_aminotransferase-alt,add,Y,13778,"SERUM GLUTAMIC PYRUVIC TRANSMINASE / ALANINE TRANSAMINASE (SGPT/ALT)"
-2,laboratory,clinical_chemistry,analyte,uric_acid,add,Y,57,"(BUA) BLOOD URIC ACID"
-2,laboratory,clinical_chemistry,analyte,potassium,add,Y,13829,"SERUM POTASSIUM (K)"
-2,laboratory,liver_function,analyte,aspartate_aminotransferase-ast,add,Y,13782,"SERUM GLUTAMIC-OXALOACETIC TRANSAMINASE / ASPARTATE TRANSAMINASE (SGOT/AST)"
-2,imaging,ct_scan,modality,ct,add,Y,4423,"CT SCAN - WHOLE ABDOMEN"

@@ -53,7 +53,6 @@ def log_agent_usage(
                     "timestamp",
                     "raw_text",
                     "description",
-                    "parsed_output",
                     "prompt_tokens",
                     "completion_tokens",
                     "total_tokens",
@@ -64,6 +63,7 @@ def log_agent_usage(
                     "success",
                     "is_error",
                     "error_message",
+                    "parsed_output",
                 ]
             )
         writer.writerow(
@@ -71,7 +71,6 @@ def log_agent_usage(
                 timestamp,
                 raw_text,
                 description,
-                parsed_output,
                 prompt_tokens,
                 completion_tokens,
                 total_tokens,
@@ -82,5 +81,6 @@ def log_agent_usage(
                 success,
                 is_error,
                 error_message,
+                parsed_output,
             ]
         )
