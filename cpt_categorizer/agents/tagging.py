@@ -73,29 +73,55 @@ def to_snake_case(value: str) -> str:
     return normalized
 
 
-class TaggingAgent:
+def _log_usage(
+    schema_version: str,
+    text_description: str,
+    parsed_output: Any,
+    response: Any,
+    start: float,
+    success: bool,
+    error_message: str,
+    description: str,
+) -> None:
+    runtime_ms = int((time.time() - start) * 1000)
+    prompt_tokens = getattr(response.usage, "prompt_tokens", 0) if response else 0
+    completion_tokens = getattr(response.usage, "completion_tokens", 0) if response else 0
+    total_tokens = getattr(response.usage, "total_tokens", 0) if response else 0
+    model = getattr(response, "model", "") if response else ""
+    log_agent_usage(
+        timestamp=datetime.now().isoformat(),
+        raw_text=text_description,
+        description=description,
+        parsed_output=json.dumps(parsed_output),
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        total_tokens=total_tokens,
+        model=model,
+        runtime_ms=runtime_ms,
+        success=success,
+        is_error=not success,
+        error_message=error_message,
+        schema_version=schema_version,
+    )
+
+
+class SectionTaggingAgent:
     def __init__(
         self,
         section_schema: dict[str, Any],
-        subsection_schema: Optional[dict[str, Any]] = None,
-        dimension_schema: Optional[dict[str, Any]] = None,
         client: Optional[openai.OpenAI] = None,
         schema_version: str = "",
     ):
         self.client = client or openai.OpenAI()
         self.section_schema = section_schema
-        self.subsection_schema = subsection_schema or {}
-        self.dimension_schema = dimension_schema or {}
         self.schema_version = schema_version
         self.sections = list(self.section_schema.keys()) + ["others"]
-
         self.sections_str = "\n".join(
             f"- {section}: {self.section_schema.get(section, {}).get('description', '')}"
             for section in self.sections
         )
         self.section_prompt = SECTION_PROMPT_TEMPLATE.format(sections_str=self.sections_str)
         self._cache_sections: dict[str, list[tuple[str, float]]] = {}
-        self._cache_subsections: dict[tuple[str, str], list[tuple[str, float]]] = {}
 
     def _call_openai_completion(self, **kwargs):
         return self.client.chat.completions.create(**kwargs)
@@ -172,7 +198,8 @@ class TaggingAgent:
             error_message = str(exc)
             logging.getLogger(__name__).warning("Section classification failed: %s", exc)
         finally:
-            self._log_usage(
+            _log_usage(
+                schema_version=self.schema_version,
                 text_description=text_description,
                 parsed_output=result,
                 response=response,
@@ -182,6 +209,24 @@ class TaggingAgent:
                 description="classify_sections",
             )
         return result
+
+
+class SubsectionTaggingAgent:
+    def __init__(
+        self,
+        section_schema: dict[str, Any],
+        subsection_schema: dict[str, Any],
+        client: Optional[openai.OpenAI] = None,
+        schema_version: str = "",
+    ):
+        self.client = client or openai.OpenAI()
+        self.section_schema = section_schema
+        self.subsection_schema = subsection_schema
+        self.schema_version = schema_version
+        self._cache_subsections: dict[tuple[str, str], list[tuple[str, float]]] = {}
+
+    def _call_openai_completion(self, **kwargs):
+        return self.client.chat.completions.create(**kwargs)
 
     def _get_subsection_prompt(self, section: str) -> str:
         subsection_keys = self.section_schema.get(section, {}).get("subsections", [])
@@ -282,7 +327,8 @@ Instructions:
             error_message = str(exc)
             logging.getLogger(__name__).warning("Subsection classification failed: %s", exc)
         finally:
-            self._log_usage(
+            _log_usage(
+                schema_version=self.schema_version,
                 text_description=text_description,
                 parsed_output=result,
                 response=response,
@@ -293,7 +339,91 @@ Instructions:
             )
         return result
 
-    def classify_dimensions(self, section: str, subsection: str, text_description: str) -> dict[str, Any]:
+
+class DimensionTaggingAgent:
+    def __init__(
+        self,
+        subsection_schema: dict[str, Any],
+        dimension_schema: dict[str, Any],
+        client: Optional[openai.OpenAI] = None,
+        schema_version: str = "",
+    ):
+        self.client = client or openai.OpenAI()
+        self.subsection_schema = subsection_schema
+        self.dimension_schema = dimension_schema
+        self.schema_version = schema_version
+
+    def _call_openai_completion(self, **kwargs):
+        return self.client.chat.completions.create(**kwargs)
+
+    def _normalize_items(self, items: Any, min_confidence: float) -> list[dict[str, float | str]]:
+        if not isinstance(items, list):
+            return []
+        normalized: list[dict[str, float | str]] = []
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            confidence = float(item.get("confidence", 0.0))
+            if confidence < min_confidence:
+                continue
+            value = to_snake_case(str(item.get("value", "")))
+            if not value:
+                continue
+            normalized.append({"value": value, "confidence": confidence})
+        return normalized
+
+    def _normalize_dimension_payload(
+        self, payload: dict[str, Any], dimension_enum_map: dict[str, list[str]]
+    ) -> dict[str, Any]:
+        actual_in = payload.get("actual", {})
+        proposed_in = payload.get("proposed", {})
+        allowed_dimensions = set(dimension_enum_map.keys())
+
+        actual_out: dict[str, list[dict[str, float | str]]] = {}
+        if isinstance(actual_in, dict):
+            for dimension, values in actual_in.items():
+                dim = to_snake_case(str(dimension))
+                if dim not in allowed_dimensions:
+                    continue
+                allowed_values = set(dimension_enum_map[dim])
+                normalized_items = self._normalize_items(values, min_confidence=0.5)
+                filtered_items = [item for item in normalized_items if item["value"] in allowed_values]
+                if filtered_items:
+                    actual_out[dim] = filtered_items
+
+        existing_out: dict[str, list[dict[str, float | str]]] = {}
+        existing_in = proposed_in.get("existing_dimensions", {}) if isinstance(proposed_in, dict) else {}
+        if isinstance(existing_in, dict):
+            for dimension, values in existing_in.items():
+                dim = to_snake_case(str(dimension))
+                if dim not in allowed_dimensions:
+                    continue
+                normalized_items = self._normalize_items(values, min_confidence=0.5)
+                if normalized_items:
+                    existing_out[dim] = normalized_items
+
+        new_out: dict[str, list[dict[str, float | str]]] = {}
+        new_in = proposed_in.get("new_dimensions", {}) if isinstance(proposed_in, dict) else {}
+        if isinstance(new_in, dict):
+            for dimension, values in new_in.items():
+                dim = to_snake_case(str(dimension))
+                if not dim:
+                    continue
+                normalized_items = self._normalize_items(values, min_confidence=0.5)
+                if normalized_items:
+                    new_out[dim] = normalized_items
+
+        return {
+            "actual": actual_out,
+            "proposed": {
+                "existing_dimensions": existing_out,
+                "new_dimensions": new_out,
+            },
+        }
+
+    def classify_dimensions(
+        self, section: str, subsection: str, text_description: str
+    ) -> dict[str, Any]:
         if section == "others" or subsection == "others":
             return empty_dimensions()
 
@@ -359,7 +489,8 @@ Instructions:
             error_message = str(exc)
             logging.getLogger(__name__).warning("Dimension extraction failed: %s", exc)
         finally:
-            self._log_usage(
+            _log_usage(
+                schema_version=self.schema_version,
                 text_description=text_description,
                 parsed_output=normalized_result,
                 response=response,
@@ -370,89 +501,79 @@ Instructions:
             )
         return normalized_result
 
-    def _normalize_dimension_payload(
-        self, payload: dict[str, Any], dimension_enum_map: dict[str, list[str]]
+
+class TaggingAgent:
+    def __init__(
+        self,
+        section_schema: dict[str, Any],
+        subsection_schema: Optional[dict[str, Any]] = None,
+        dimension_schema: Optional[dict[str, Any]] = None,
+        client: Optional[openai.OpenAI] = None,
+        schema_version: str = "",
+    ):
+        subsection_schema = subsection_schema or {}
+        dimension_schema = dimension_schema or {}
+        self._section_agent = SectionTaggingAgent(
+            section_schema=section_schema,
+            client=client,
+            schema_version=schema_version,
+        )
+        self._subsection_agent = SubsectionTaggingAgent(
+            section_schema=section_schema,
+            subsection_schema=subsection_schema,
+            client=client,
+            schema_version=schema_version,
+        )
+        self._dimension_agent = DimensionTaggingAgent(
+            subsection_schema=subsection_schema,
+            dimension_schema=dimension_schema,
+            client=client,
+            schema_version=schema_version,
+        )
+
+    def classify_sections(
+        self, text_description: str, confidence_threshold: float = 0.5
+    ) -> list[tuple[str, float]]:
+        return self._section_agent.classify_sections(
+            text_description, confidence_threshold=confidence_threshold
+        )
+
+    def classify_subsections(
+        self, section: str, text_description: str, confidence_threshold: float = 0.5
+    ) -> list[tuple[str, float]]:
+        return self._subsection_agent.classify_subsections(
+            section, text_description, confidence_threshold=confidence_threshold
+        )
+
+    def classify_dimensions(
+        self, section: str, subsection: str, text_description: str
     ) -> dict[str, Any]:
-        actual_in = payload.get("actual", {})
-        proposed_in = payload.get("proposed", {})
-        allowed_dimensions = set(dimension_enum_map.keys())
+        return self._dimension_agent.classify_dimensions(
+            section, subsection, text_description
+        )
 
-        actual_out: dict[str, list[dict[str, float | str]]] = {}
-        if isinstance(actual_in, dict):
-            for dimension, values in actual_in.items():
-                dim = to_snake_case(str(dimension))
-                if dim not in allowed_dimensions:
-                    continue
-                allowed_values = set(dimension_enum_map[dim])
-                normalized_items = self._normalize_items(values, min_confidence=0.5)
-                filtered_items = [item for item in normalized_items if item["value"] in allowed_values]
-                if filtered_items:
-                    actual_out[dim] = filtered_items
-
-        existing_out: dict[str, list[dict[str, float | str]]] = {}
-        existing_in = proposed_in.get("existing_dimensions", {}) if isinstance(proposed_in, dict) else {}
-        if isinstance(existing_in, dict):
-            for dimension, values in existing_in.items():
-                dim = to_snake_case(str(dimension))
-                if dim not in allowed_dimensions:
-                    continue
-                normalized_items = self._normalize_items(values, min_confidence=0.5)
-                if normalized_items:
-                    existing_out[dim] = normalized_items
-
-        new_out: dict[str, list[dict[str, float | str]]] = {}
-        new_in = proposed_in.get("new_dimensions", {}) if isinstance(proposed_in, dict) else {}
-        if isinstance(new_in, dict):
-            for dimension, values in new_in.items():
-                dim = to_snake_case(str(dimension))
-                if not dim:
-                    continue
-                normalized_items = self._normalize_items(values, min_confidence=0.5)
-                if normalized_items:
-                    new_out[dim] = normalized_items
-
-        return {
-            "actual": actual_out,
-            "proposed": {
-                "existing_dimensions": existing_out,
-                "new_dimensions": new_out,
-            },
-        }
-
-    def _normalize_items(self, items: Any, min_confidence: float) -> list[dict[str, float | str]]:
-        if not isinstance(items, list):
-            return []
-        normalized: list[dict[str, float | str]] = []
-        for item in items:
-            if not isinstance(item, dict):
-                continue
-            confidence = float(item.get("confidence", 0.0))
-            if confidence < min_confidence:
-                continue
-            value = to_snake_case(str(item.get("value", "")))
-            if not value:
-                continue
-            normalized.append({"value": value, "confidence": confidence})
-        return normalized
-
-    def generate_tags(self, text_description: str, confidence_threshold: float = 0.5) -> list[dict[str, Any]]:
+    def generate_tags(
+        self, text_description: str, confidence_threshold: float = 0.5
+    ) -> list[dict[str, Any]]:
         if not text_description or not text_description.strip():
             return []
         tags: list[dict[str, Any]] = []
-        candidate_sections = self.classify_sections(
+        candidate_sections = self._section_agent.classify_sections(
             text_description, confidence_threshold=confidence_threshold
         )
         if not candidate_sections:
             return []
 
         for section, section_conf in candidate_sections:
-            candidate_subsections = self.classify_subsections(
+            candidate_subsections = self._subsection_agent.classify_subsections(
                 section, text_description, confidence_threshold=confidence_threshold
             )
             if not candidate_subsections:
                 continue
             for subsection, subsection_conf in candidate_subsections:
-                dimensions = self.classify_dimensions(section, subsection, text_description)
+                dimensions = self._dimension_agent.classify_dimensions(
+                    section, subsection, text_description
+                )
                 actual_values = [
                     item["confidence"]
                     for values in dimensions.get("actual", {}).values()
@@ -470,7 +591,9 @@ Instructions:
                         "section": section,
                         "subsection": subsection,
                         "confidence": float(combined_conf),
-                        "dimensions": dimensions if subsection != "others" else empty_dimensions(),
+                        "dimensions": (
+                            dimensions if subsection != "others" else empty_dimensions()
+                        ),
                     }
                 )
         return tags
@@ -489,34 +612,3 @@ Instructions:
                 for tag in self.generate_tags(text_description)
             ],
         }
-
-    def _log_usage(
-        self,
-        text_description: str,
-        parsed_output: Any,
-        response: Any,
-        start: float,
-        success: bool,
-        error_message: str,
-        description: str,
-    ) -> None:
-        runtime_ms = int((time.time() - start) * 1000)
-        prompt_tokens = getattr(response.usage, "prompt_tokens", 0) if response else 0
-        completion_tokens = getattr(response.usage, "completion_tokens", 0) if response else 0
-        total_tokens = getattr(response.usage, "total_tokens", 0) if response else 0
-        model = getattr(response, "model", "") if response else ""
-        log_agent_usage(
-            timestamp=datetime.now().isoformat(),
-            raw_text=text_description,
-            description=description,
-            parsed_output=json.dumps(parsed_output),
-            prompt_tokens=prompt_tokens,
-            completion_tokens=completion_tokens,
-            total_tokens=total_tokens,
-            model=model,
-            runtime_ms=runtime_ms,
-            success=success,
-            is_error=not success,
-            error_message=error_message,
-            schema_version=self.schema_version,
-        )

@@ -6,6 +6,9 @@ import pytest
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
 from cpt_categorizer.agents.normalizer import NormalizerAgent
 from cpt_categorizer.agents.parsing import ParsingAgent
+from cpt_categorizer.agents.tagging import DimensionTaggingAgent
+from cpt_categorizer.agents.tagging import SectionTaggingAgent
+from cpt_categorizer.agents.tagging import SubsectionTaggingAgent
 from cpt_categorizer.agents.tagging import TaggingAgent
 from cpt_categorizer.pipeline import process_row
 from cpt_categorizer.schema_contract import load_schema_contract
@@ -80,15 +83,23 @@ def test_schema_contract_cross_references_are_valid(schema_contract):
 
 
 @pytest.mark.generate_tags
-@patch.object(TaggingAgent, "_call_openai_completion")
-def test_generate_tags_returns_dimensions_contract(mock_call, tagging_agent):
-    mock_call.side_effect = [
+@patch.object(DimensionTaggingAgent, "_call_openai_completion")
+@patch.object(SubsectionTaggingAgent, "_call_openai_completion")
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_generate_tags_returns_dimensions_contract(
+    mock_section_call, mock_subsection_call, mock_dimension_call, tagging_agent
+):
+    mock_section_call.side_effect = [
         build_mock_response(
             {"sections": [{"section": "imaging", "confidence": 0.95}]}
         ),
+    ]
+    mock_subsection_call.side_effect = [
         build_mock_response(
             {"subsections": [{"subsection": "xray", "confidence": 0.9}]}
         ),
+    ]
+    mock_dimension_call.side_effect = [
         build_mock_response(
             {
                 "actual": {"contrast": [{"value": "with_contrast", "confidence": 0.9}]},
@@ -112,15 +123,23 @@ def test_generate_tags_returns_dimensions_contract(mock_call, tagging_agent):
 
 
 @pytest.mark.generate_tags
-@patch.object(TaggingAgent, "_call_openai_completion")
-def test_generate_tags_filters_low_dimension_confidence(mock_call, tagging_agent):
-    mock_call.side_effect = [
+@patch.object(DimensionTaggingAgent, "_call_openai_completion")
+@patch.object(SubsectionTaggingAgent, "_call_openai_completion")
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_generate_tags_filters_low_dimension_confidence(
+    mock_section_call, mock_subsection_call, mock_dimension_call, tagging_agent
+):
+    mock_section_call.side_effect = [
         build_mock_response(
             {"sections": [{"section": "imaging", "confidence": 0.95}]}
         ),
+    ]
+    mock_subsection_call.side_effect = [
         build_mock_response(
             {"subsections": [{"subsection": "xray", "confidence": 0.9}]}
         ),
+    ]
+    mock_dimension_call.side_effect = [
         build_mock_response(
             {
                 "actual": {
@@ -143,9 +162,9 @@ def test_generate_tags_filters_low_dimension_confidence(mock_call, tagging_agent
 
 
 @pytest.mark.generate_tags
-@patch.object(TaggingAgent, "_call_openai_completion")
-def test_tag_entry_others_keeps_full_dimensions_shape(mock_call, tagging_agent):
-    mock_call.side_effect = [
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_tag_entry_others_keeps_full_dimensions_shape(mock_section_call, tagging_agent):
+    mock_section_call.side_effect = [
         build_mock_response(
             {"sections": [{"section": "others", "confidence": 0.7}]}
         )

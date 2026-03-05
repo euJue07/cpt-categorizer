@@ -84,7 +84,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 ## Tasks
 
 - [x] Add suggestion store module (`cpt_categorizer/suggestion_store.py`) and data path (e.g. `data/interim/suggestions.json`).
-- [ ] Split current tagging into Section / Subsection / Dimension tagging agents (or three classes in one module).
+- [x] Split current tagging into Section / Subsection / Dimension tagging agents (or three classes in one module).
 - [ ] Add Section Suggestor agent; persist suggestions to store; check store before LLM.
 - [ ] Add Subsection Suggestor agent; same pattern.
 - [ ] Add Dimension Suggestor agent; same pattern.
@@ -101,4 +101,5 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 
 ## Recent completions
 
+- **2025-03-05** — Split tagging into SectionTaggingAgent, SubsectionTaggingAgent, DimensionTaggingAgent in tagging.py; TaggingAgent now orchestrates the three; tests patched for sub-agents; agents/__init__.py exports new classes.
 - **2025-03-05** — Added suggestion_store.py with load/save/query/append/update_status; INTERIM_DIR and SUGGESTIONS_PATH in config; data/interim/.gitkeep; tests/test_suggestion_store.py (12 tests).
