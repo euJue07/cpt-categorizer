@@ -4,6 +4,7 @@ from cpt_categorizer.agents.normalizer import NormalizerAgent
 from cpt_categorizer.agents.parsing import ParsingAgent
 from cpt_categorizer.agents.section_governor import SectionGovernorAgent
 from cpt_categorizer.agents.section_suggestor import SectionSuggestorAgent
+from cpt_categorizer.agents.subsection_governor import SubsectionGovernorAgent
 from cpt_categorizer.agents.subsection_suggestor import SubsectionSuggestorAgent
 from cpt_categorizer.agents.tagging import DimensionTaggingAgent
 from cpt_categorizer.agents.tagging import SectionTaggingAgent
@@ -17,6 +18,7 @@ __all__ = [
     "SchemaComplianceAgent",
     "SectionGovernorAgent",
     "SectionSuggestorAgent",
+    "SubsectionGovernorAgent",
     "SubsectionSuggestorAgent",
     "SectionTaggingAgent",
     "SubsectionTaggingAgent",

@@ -2,8 +2,6 @@
 
 **Last updated:** 2025-03-05
 
-## Overview
-
 Refactor the current single Tagging Agent into **9 specialized agents**: 3 taggers (Section, Subsection, Dimension), 3 suggestors (one per level), and 3 governors (one per level). Taggers assign labels from the schema and decide when a CPT description is "outside" the current schema; suggestors propose new section/subsection/dimension when missing and persist every suggestion to a **suggestion store**; governors decide whether a suggestion is acceptable, a duplicate, or rejected, using the schema and store **before** calling the LLM to reduce API usage.
 
 See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
@@ -89,7 +87,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 - [x] Add Subsection Suggestor agent; same pattern.
 - [x] Add Dimension Suggestor agent; same pattern.
 - [x] Add Section Governor agent; resolve pending suggestions using schema + store first; LLM only for novel suggestions.
-- [ ] Add Subsection Governor agent; same pattern.
+- [x] Add Subsection Governor agent; same pattern.
 - [ ] Add Dimension Governor agent; same pattern.
 - [ ] Wire taggers, suggestors, and governors in pipeline (trigger suggestors on "outside" / "proposed"; run governors on pending suggestions).
 - [ ] Update docs (e.g. `docs/docs/agent_roles.md`) with 9 agents and suggestion store.
@@ -101,6 +99,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 
 ## Recent completions
 
+- **2025-03-05** — Added SubsectionGovernorAgent (subsection_governor.py): resolve pending subsection suggestions using schema + store first (duplicate / store reuse by key+parent_section); LLM only for novel suggestions; log all paths (subsection_governor_duplicate, subsection_governor_store_reuse, subsection_governor); tests/agents/test_subsection_governor.py (7 tests); export in agents/__init__.py.
 - **2025-03-05** — Added SectionGovernorAgent (section_governor.py): resolve pending section suggestions using schema + store first (duplicate / store reuse); LLM only for novel suggestions; log all paths (section_governor_duplicate, section_governor_store_reuse, section_governor); tests/test_section_governor.py (7 tests); export in agents/__init__.py.
 - **2025-03-05** — Added DimensionSuggestorAgent (dimension_suggestor.py) with store-before-LLM, context=section:subsection:dim_key:hash(desc); suggest_dimensions() for existing_dimensions (no LLM) and new_dimensions (LLM for suggested_description); tests/test_dimension_suggestor.py (invalid inputs, store hit, new existing_dim, new new_dim, duplicate key); export in agents/__init__.py.
 - **2025-03-05** — Added SubsectionSuggestorAgent (subsection_suggestor.py) with store-before-LLM, context=section:hash(desc), parent_section in record; tests/test_subsection_suggestor.py (invalid inputs, store hit, new suggestion, duplicate key); export in agents/__init__.py.
