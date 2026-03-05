@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Any
 from typing import Optional
 
@@ -187,6 +188,7 @@ def run_pipeline(
     debug=False,
     col_name_desc="CPTDesc",
     col_name_key="CPTDescKey",
+    suggestions_path: Optional[Path] = None,
 ):
     import pandas as pd
     from tqdm import tqdm
@@ -239,28 +241,34 @@ def run_pipeline(
     section_suggestor = SectionSuggestorAgent(
         section_schema=schema_contract.sections,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
     subsection_suggestor = SubsectionSuggestorAgent(
         section_schema=schema_contract.sections,
         subsection_schema=schema_contract.subsections,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
     dimension_suggestor = DimensionSuggestorAgent(
         dimension_schema=schema_contract.dimensions,
         subsection_schema=schema_contract.subsections,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
     section_governor = SectionGovernorAgent(
         section_schema=schema_contract.sections,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
     subsection_governor = SubsectionGovernorAgent(
         subsection_schema=schema_contract.subsections,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
     dimension_governor = DimensionGovernorAgent(
         dimension_schema=schema_contract.dimensions,
         schema_version=schema_contract.version,
+        store_path=suggestions_path,
     )
 
     category_rows = []

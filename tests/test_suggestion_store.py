@@ -1,6 +1,7 @@
 """Tests for suggestion_store load/save/query/append/update_status."""
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -157,3 +158,52 @@ def test_append_creates_interim_dir_if_missing(tmp_path: Path) -> None:
     append(path, {"type": "section", "suggested_key": "k", "status": "pending"})
     assert path.exists()
     assert load(path)[0]["suggested_key"] == "k"
+
+
+def test_load_uses_default_path_when_path_is_none(tmp_path: Path) -> None:
+    """When path=None, load() uses SUGGESTIONS_PATH."""
+    store_path = tmp_path / "suggestions.json"
+    store_path.write_text("[]")
+    with patch("cpt_categorizer.suggestion_store.SUGGESTIONS_PATH", store_path):
+        assert load(None) == []
+
+
+def test_append_uses_default_path_when_path_is_none(tmp_path: Path) -> None:
+    """When path=None, append() uses SUGGESTIONS_PATH."""
+    store_path = tmp_path / "suggestions.json"
+    with patch("cpt_categorizer.suggestion_store.SUGGESTIONS_PATH", store_path):
+        append(None, {"type": "section", "suggested_key": "default_path", "status": "pending"})
+    assert store_path.exists()
+    got = load(store_path)
+    assert len(got) == 1
+    assert got[0]["suggested_key"] == "default_path"
+
+
+def test_update_status_uses_default_path_when_path_is_none(tmp_path: Path) -> None:
+    """When path=None, update_status() uses SUGGESTIONS_PATH."""
+    store_path = tmp_path / "suggestions.json"
+    append(store_path, {"type": "section", "suggested_key": "x", "status": "pending"})
+    sid = load(store_path)[0]["id"]
+    with patch("cpt_categorizer.suggestion_store.SUGGESTIONS_PATH", store_path):
+        ok = update_status(None, sid, "accepted")
+    assert ok is True
+    assert load(store_path)[0]["status"] == "accepted"
+
+
+def test_append_preserves_existing_id_and_created_at(tmp_path: Path) -> None:
+    """When suggestion already has id and created_at, append does not overwrite them."""
+    path = tmp_path / "suggestions.json"
+    custom_id = "custom-uuid-123"
+    custom_created = "2020-01-01T00:00:00+00:00"
+    suggestion = {
+        "type": "section",
+        "suggested_key": "preserved",
+        "status": "pending",
+        "id": custom_id,
+        "created_at": custom_created,
+    }
+    append(path, suggestion)
+    got = load(path)
+    assert len(got) == 1
+    assert got[0]["id"] == custom_id
+    assert got[0]["created_at"] == custom_created

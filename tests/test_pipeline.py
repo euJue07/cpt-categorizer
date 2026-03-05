@@ -1,5 +1,6 @@
 """Tests for pipeline wiring: suggestors triggered on outside/proposed, governors on pending."""
 
+import json
 from pathlib import Path
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -9,9 +10,11 @@ import pytest
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
 from cpt_categorizer.agents.normalizer import NormalizerAgent
 from cpt_categorizer.agents.parsing import ParsingAgent
+from cpt_categorizer.agents.tagging import empty_dimensions
 from cpt_categorizer.pipeline import process_row
 from cpt_categorizer.pipeline import run_pipeline
 from cpt_categorizer.schema_contract import load_schema_contract
+from cpt_categorizer.suggestion_store import find_by_type
 
 
 @pytest.fixture
@@ -192,3 +195,73 @@ def test_run_pipeline_calls_governors_after_processing(tmp_path: Path):
     mock_section_gov.resolve_pending_sections.assert_called_once()
     mock_subsection_gov.resolve_pending_subsections.assert_called_once()
     mock_dim_gov.resolve_pending_dimensions.assert_called_once()
+
+
+@pytest.mark.integration
+@pytest.mark.generate_tags
+def test_pipeline_suggestors_write_store_governors_resolve_pending(tmp_path: Path):
+    """Integration: run_pipeline with real store and real suggestors/governors; suggestors append pending, governors resolve."""
+    pytest.importorskip("pandas")
+    csv_path = tmp_path / "cpt.csv"
+    csv_path.write_text("CPTDesc,CPTDescKey\nUnknown procedure,K1\n")
+    store_path = tmp_path / "suggestions.json"
+
+    class StubTaggingAgent:
+        def classify_sections(self, text_description: str, confidence_threshold: float = 0.5):
+            return [("others", 0.8)]
+
+        def classify_subsections(
+            self, section: str, text_description: str, confidence_threshold: float = 0.5
+        ):
+            return [("others", 1.0)]
+
+        def classify_dimensions(
+            self, section: str, subsection: str, text_description: str
+        ):
+            return empty_dimensions()
+
+    def make_suggestor_response():
+        r = MagicMock()
+        r.choices = [MagicMock()]
+        r.choices[0].message.function_call.arguments = json.dumps(
+            {"suggested_key": "wound_care", "suggested_description": "Wound care and dressing"}
+        )
+        r.usage = MagicMock(prompt_tokens=10, completion_tokens=8, total_tokens=18)
+        r.model = "gpt-4o"
+        return r
+
+    def make_governor_response():
+        r = MagicMock()
+        r.choices = [MagicMock()]
+        r.choices[0].message.function_call.arguments = json.dumps({"accept": True})
+        r.usage = MagicMock(prompt_tokens=20, completion_tokens=5, total_tokens=25)
+        r.model = "gpt-4o"
+        return r
+
+    mock_client = MagicMock()
+    mock_client.chat.completions.create.side_effect = [
+        make_suggestor_response(),
+        make_governor_response(),
+    ]
+
+    with patch("cpt_categorizer.pipeline.TaggingAgent", return_value=StubTaggingAgent()), patch(
+        "cpt_categorizer.agents.section_suggestor.openai"
+    ) as mock_openai_sug, patch(
+        "cpt_categorizer.agents.section_governor.openai"
+    ) as mock_openai_gov:
+        mock_openai_sug.OpenAI.return_value = mock_client
+        mock_openai_gov.OpenAI.return_value = mock_client
+        run_pipeline(
+            top_n=1,
+            csv_path=csv_path,
+            col_name_desc="CPTDesc",
+            col_name_key="CPTDescKey",
+            suggestions_path=store_path,
+        )
+
+    section_suggestions = find_by_type(store_path, "section")
+    assert len(section_suggestions) >= 1
+    section_suggestion = section_suggestions[0]
+    assert section_suggestion["type"] == "section"
+    assert section_suggestion.get("suggested_key") == "wound_care"
+    assert section_suggestion["status"] in ("accepted", "rejected", "duplicate")
