@@ -17,6 +17,7 @@ from cpt_categorizer.agents.tagging import TaggingAgent
 from cpt_categorizer.agents.tagging import empty_dimensions
 from cpt_categorizer.config.directory import LOG_DIR
 from cpt_categorizer.config.directory import RAW_DIR
+from cpt_categorizer.config.directory import TAGGING_CACHE_PATH
 from cpt_categorizer.schema_contract import load_schema_contract
 
 
@@ -189,6 +190,7 @@ def run_pipeline(
     col_name_desc="CPTDesc",
     col_name_key="CPTDescKey",
     suggestions_path: Optional[Path] = None,
+    tagging_cache_path: Optional[Path] = None,
 ):
     import pandas as pd
     from tqdm import tqdm
@@ -234,6 +236,7 @@ def run_pipeline(
         subsection_schema=schema_contract.subsections,
         dimension_schema=schema_contract.dimensions,
         schema_version=schema_contract.version,
+        cache_path=tagging_cache_path or TAGGING_CACHE_PATH,
     )
     normalizer_agent = NormalizerAgent()
     compliance_agent = SchemaComplianceAgent(schema_contract=schema_contract, mode="balanced")

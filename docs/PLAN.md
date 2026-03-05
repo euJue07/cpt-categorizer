@@ -92,13 +92,14 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 - [x] Wire taggers, suggestors, and governors in pipeline (trigger suggestors on "outside" / "proposed"; run governors on pending suggestions).
 - [x] Update docs (e.g. `docs/docs/agent_roles.md`) with 9 agents and suggestion store.
 - [x] Add unit tests for store and each agent; integration test for pipeline + store + governor resolution.
-- [ ] Persist tagging cache to `data/interim/tagging_cache.json`; load on init.
+- [x] Persist tagging cache to `data/interim/tagging_cache.json`; load on init.
 - [ ] Ensure every token/cost is logged: log cache and store hits with 0 tokens; use model-aware pricing in usage logger.
 
 ---
 
 ## Recent completions
 
+- **2025-03-05** — Persist tagging cache: added TAGGING_CACHE_PATH, tagging_cache.py (TaggingCache load/persist), Section/Subsection agents accept cache and persist after update, TaggingAgent accepts cache_path and uses TaggingCache on init; pipeline passes tagging_cache_path; tests/test_tagging_cache.py and cache-backed tests in test_tagging.py.
 - **2025-03-05** — Unit and integration tests: store tests (default path, append preserves id/created_at); unit tests for SectionTaggingAgent, SubsectionTaggingAgent, DimensionTaggingAgent; suggestions_path in run_pipeline; integration test pipeline + store + governor resolution.
 - **2025-03-05** — Updated docs/docs/agent_roles.md with nine-agent architecture (3 taggers, 3 suggestors, 3 governors), suggestion store (location, module API, record shape, usage), intended flow, and planned (later) agents.
 - **2025-03-05** — Wired taggers, suggestors, and governors in pipeline: process_row refactored to step-by-step tagging (classify_sections → classify_subsections → classify_dimensions); section suggestor on "others", subsection suggestor on empty subsections, dimension suggestor on proposed dimensions; run_pipeline instantiates all six agents and calls three governors after the tagging loop; tests/test_pipeline.py (suggestor triggers, governor calls); test_process_row_emits_schema_version updated to stub classify_*.

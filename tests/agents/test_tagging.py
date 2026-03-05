@@ -12,6 +12,7 @@ from cpt_categorizer.agents.tagging import SubsectionTaggingAgent
 from cpt_categorizer.agents.tagging import TaggingAgent
 from cpt_categorizer.pipeline import process_row
 from cpt_categorizer.schema_contract import load_schema_contract
+from cpt_categorizer.tagging_cache import TaggingCache
 
 
 class MockResponse:
@@ -475,3 +476,146 @@ def test_dimension_tagging_agent_classify_dimensions_filters_low_confidence(
     result = agent.classify_dimensions("lab", "chemistry", "Lab panel")
     assert len(result["actual"]["analyte"]) == 1
     assert result["actual"]["analyte"][0]["value"] == "glucose"
+
+
+# --- Cache-backed agents (persist tagging cache) ---
+
+
+@pytest.mark.generate_tags
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_section_tagging_agent_with_cache_loads_on_init_and_skips_api_when_cached(
+    mock_call, minimal_section_schema, tmp_path
+):
+    """SectionTaggingAgent with cache uses pre-populated cache; no API call for cached key."""
+    cache_path = tmp_path / "tagging_cache.json"
+    cache = TaggingCache(cache_path)
+    cache.sections["chest x-ray"] = [("imaging", 0.9)]
+    cache.persist()
+
+    agent = SectionTaggingAgent(
+        section_schema=minimal_section_schema,
+        schema_version="test",
+        cache=cache,
+    )
+    result = agent.classify_sections("Chest X-ray")
+    assert result == [("imaging", 0.9)]
+    mock_call.assert_not_called()
+
+
+@pytest.mark.generate_tags
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_section_tagging_agent_with_cache_persists_after_new_result(
+    mock_call, minimal_section_schema, tmp_path
+):
+    """SectionTaggingAgent with cache persists to file after API result."""
+    mock_call.return_value = build_mock_response(
+        {"sections": [{"section": "lab", "confidence": 0.85}]}
+    )
+    cache_path = tmp_path / "tagging_cache.json"
+    cache = TaggingCache(cache_path)
+    cache.load()
+
+    agent = SectionTaggingAgent(
+        section_schema=minimal_section_schema,
+        schema_version="test",
+        cache=cache,
+    )
+    agent.classify_sections("Blood draw")
+    assert cache_path.exists()
+    cache2 = TaggingCache(cache_path)
+    cache2.load()
+    assert "blood draw" in cache2.sections
+    assert cache2.sections["blood draw"] == [("lab", 0.85)]
+
+
+@pytest.mark.generate_tags
+@patch.object(SubsectionTaggingAgent, "_call_openai_completion")
+def test_subsection_tagging_agent_with_cache_loads_on_init_and_skips_api_when_cached(
+    mock_call, minimal_section_schema, minimal_subsection_schema, tmp_path
+):
+    """SubsectionTaggingAgent with cache uses pre-populated cache; no API call for cached key."""
+    minimal_section_schema["imaging"] = {"description": "Imaging", "subsections": ["xray"]}
+    minimal_subsection_schema["imaging"] = {"xray": {"description": "X-ray"}}
+    cache_path = tmp_path / "tagging_cache.json"
+    cache = TaggingCache(cache_path)
+    cache.subsections["imaging|chest x-ray"] = [("xray", 0.9)]
+    cache.persist()
+
+    agent = SubsectionTaggingAgent(
+        section_schema=minimal_section_schema,
+        subsection_schema=minimal_subsection_schema,
+        schema_version="test",
+        cache=cache,
+    )
+    result = agent.classify_subsections("imaging", "Chest X-ray")
+    assert result == [("xray", 0.9)]
+    mock_call.assert_not_called()
+
+
+@pytest.mark.generate_tags
+@patch.object(SubsectionTaggingAgent, "_call_openai_completion")
+def test_subsection_tagging_agent_with_cache_persists_after_new_result(
+    mock_call, minimal_section_schema, minimal_subsection_schema, tmp_path
+):
+    """SubsectionTaggingAgent with cache persists to file after API result."""
+    minimal_section_schema["imaging"] = {"description": "Imaging", "subsections": ["xray"]}
+    minimal_subsection_schema["imaging"] = {"xray": {"description": "X-ray"}}
+    mock_call.return_value = build_mock_response(
+        {"subsections": [{"subsection": "xray", "confidence": 0.88}]}
+    )
+    cache_path = tmp_path / "tagging_cache.json"
+    cache = TaggingCache(cache_path)
+    cache.load()
+
+    agent = SubsectionTaggingAgent(
+        section_schema=minimal_section_schema,
+        subsection_schema=minimal_subsection_schema,
+        schema_version="test",
+        cache=cache,
+    )
+    agent.classify_subsections("imaging", "Chest X-ray")
+    assert cache_path.exists()
+    cache2 = TaggingCache(cache_path)
+    cache2.load()
+    assert "imaging|chest x-ray" in cache2.subsections
+    assert cache2.subsections["imaging|chest x-ray"] == [("xray", 0.88)]
+
+
+@pytest.mark.generate_tags
+@patch.object(DimensionTaggingAgent, "_call_openai_completion")
+@patch.object(SubsectionTaggingAgent, "_call_openai_completion")
+@patch.object(SectionTaggingAgent, "_call_openai_completion")
+def test_tagging_agent_with_cache_path_loads_and_persists_section_cache(
+    mock_section_call,
+    mock_subsection_call,
+    mock_dimension_call,
+    schema_contract,
+    tmp_path,
+):
+    """TaggingAgent with cache_path loads on init and persists section cache after classify."""
+    mock_section_call.return_value = build_mock_response(
+        {"sections": [{"section": "imaging", "confidence": 0.9}]}
+    )
+    mock_subsection_call.return_value = build_mock_response(
+        {"subsections": [{"subsection": "xray", "confidence": 0.9}]}
+    )
+    mock_dimension_call.return_value = build_mock_response(
+        {
+            "actual": {},
+            "proposed": {"existing_dimensions": {}, "new_dimensions": {}},
+        }
+    )
+    cache_path = tmp_path / "tagging_cache.json"
+    agent = TaggingAgent(
+        section_schema=schema_contract.sections,
+        subsection_schema=schema_contract.subsections,
+        dimension_schema=schema_contract.dimensions,
+        schema_version=schema_contract.version,
+        cache_path=cache_path,
+    )
+    agent.classify_sections("Chest X-ray")
+    assert cache_path.exists()
+    cache = TaggingCache(cache_path)
+    cache.load()
+    assert "chest x-ray" in cache.sections
+    assert cache.sections["chest x-ray"] == [("imaging", 0.9)]

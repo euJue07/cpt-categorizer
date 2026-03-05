@@ -5,6 +5,7 @@ import json
 import logging
 import re
 import time
+from pathlib import Path
 from typing import Any
 from typing import Optional
 
@@ -14,6 +15,7 @@ from openai import APITimeoutError
 from openai import RateLimitError
 
 from cpt_categorizer.config.openai import OPENAI_MODEL
+from cpt_categorizer.tagging_cache import TaggingCache
 from cpt_categorizer.utils.logging import log_agent_usage
 
 
@@ -111,6 +113,7 @@ class SectionTaggingAgent:
         section_schema: dict[str, Any],
         client: Optional[openai.OpenAI] = None,
         schema_version: str = "",
+        cache: Optional[TaggingCache] = None,
     ):
         self.client = client or openai.OpenAI()
         self.section_schema = section_schema
@@ -121,7 +124,10 @@ class SectionTaggingAgent:
             for section in self.sections
         )
         self.section_prompt = SECTION_PROMPT_TEMPLATE.format(sections_str=self.sections_str)
-        self._cache_sections: dict[str, list[tuple[str, float]]] = {}
+        self._cache = cache
+        self._cache_sections: dict[str, list[tuple[str, float]]] = (
+            cache.sections if cache is not None else {}
+        )
 
     def _call_openai_completion(self, **kwargs):
         return self.client.chat.completions.create(**kwargs)
@@ -193,6 +199,8 @@ class SectionTaggingAgent:
                     result.append((section, confidence))
             result = list(dict.fromkeys(result))
             self._cache_sections[normalized_text] = result
+            if self._cache is not None:
+                self._cache.persist()
             success = True
         except Exception as exc:
             error_message = str(exc)
@@ -218,12 +226,16 @@ class SubsectionTaggingAgent:
         subsection_schema: dict[str, Any],
         client: Optional[openai.OpenAI] = None,
         schema_version: str = "",
+        cache: Optional[TaggingCache] = None,
     ):
         self.client = client or openai.OpenAI()
         self.section_schema = section_schema
         self.subsection_schema = subsection_schema
         self.schema_version = schema_version
-        self._cache_subsections: dict[tuple[str, str], list[tuple[str, float]]] = {}
+        self._cache = cache
+        self._cache_subsections: dict[tuple[str, str], list[tuple[str, float]]] = (
+            {} if cache is not None else {}
+        )
 
     def _call_openai_completion(self, **kwargs):
         return self.client.chat.completions.create(**kwargs)
@@ -283,9 +295,14 @@ Instructions:
             return [("others", 1.0)]
 
         normalized_text = text_description.strip().lower()
-        cache_key = (section, normalized_text)
-        if cache_key in self._cache_subsections:
-            return self._cache_subsections[cache_key]
+        if self._cache is not None:
+            cache_key_str = f"{section}|{normalized_text}"
+            if cache_key_str in self._cache.subsections:
+                return self._cache.subsections[cache_key_str]
+        else:
+            cache_key = (section, normalized_text)
+            if cache_key in self._cache_subsections:
+                return self._cache_subsections[cache_key]
 
         subsection_prompt = self._get_subsection_prompt(section)
         function_spec = self._get_subsection_function_specification(section)
@@ -321,7 +338,11 @@ Instructions:
                 confidence = float(item.get("confidence", 0.0))
                 if subsection in valid_subsections and confidence >= confidence_threshold:
                     result.append((subsection, confidence))
-            self._cache_subsections[cache_key] = result
+            if self._cache is not None:
+                self._cache.subsections[cache_key_str] = result
+                self._cache.persist()
+            else:
+                self._cache_subsections[cache_key] = result
             success = True
         except Exception as exc:
             error_message = str(exc)
@@ -510,19 +531,26 @@ class TaggingAgent:
         dimension_schema: Optional[dict[str, Any]] = None,
         client: Optional[openai.OpenAI] = None,
         schema_version: str = "",
+        cache_path: Optional[Path] = None,
     ):
         subsection_schema = subsection_schema or {}
         dimension_schema = dimension_schema or {}
+        cache: Optional[TaggingCache] = None
+        if cache_path is not None:
+            cache = TaggingCache(cache_path)
+            cache.load()
         self._section_agent = SectionTaggingAgent(
             section_schema=section_schema,
             client=client,
             schema_version=schema_version,
+            cache=cache,
         )
         self._subsection_agent = SubsectionTaggingAgent(
             section_schema=section_schema,
             subsection_schema=subsection_schema,
             client=client,
             schema_version=schema_version,
+            cache=cache,
         )
         self._dimension_agent = DimensionTaggingAgent(
             subsection_schema=subsection_schema,
