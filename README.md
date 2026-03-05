@@ -75,10 +75,12 @@ This project uses a modular AI agent framework to classify unstandardized CPT ph
 
 ### ⚙️ Key Schema Files
 
-* `cpt_detail.json` — Valid detail dimensions and tag values
-* `cpt_section_subsection.json` — Allowed sections and subsections
-* `cpt_detail_rule.json` — Formatting, spelling, and normalization rules
-* Schema snapshots and logs stored in `references/`
+The **`schema/`** directory is the single source of truth for the CPT taxonomy and dimensions. All agents and pipeline code load from these files:
+
+* `schema/sections.json` — Top-level sections and their subsections (e.g. anesthesiology, dental, laboratory, imaging, procedures)
+* `schema/subsections.json` — Subsection definitions and allowed dimensions per section
+* `schema/dimensions.json` — Dimension definitions with allowed values (used for tagging and normalization)
+* Schema snapshots and version logs stored in `references/`
 
 ---
 

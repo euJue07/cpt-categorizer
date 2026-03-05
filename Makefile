@@ -33,6 +33,11 @@ lint:
 	isort --check --diff --profile black cpt_categorizer
 	black --check --config pyproject.toml cpt_categorizer
 
+## Lint schema (dimensions.json: no duplicates, snake_case, alphabetical sort)
+.PHONY: lint-schema
+lint-schema:
+	$(PYTHON_INTERPRETER) scripts/lint_schema.py
+
 ## Format source code with black
 .PHONY: format
 format:

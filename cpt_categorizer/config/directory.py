@@ -1,5 +1,7 @@
 from pathlib import Path
 
-SCHEMA_DIR = Path("/Users/juedimyroeugenio/VSCodeProjects/cpt-categorizer/schema/")
-LOG_DIR = Path("/Users/juedimyroeugenio/VSCodeProjects/cpt-categorizer/logs/")
-RAW_DIR = Path("/Users/juedimyroeugenio/VSCodeProjects/cpt-categorizer/data/raw/")
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+
+SCHEMA_DIR = _PROJECT_ROOT / "schema"
+LOG_DIR = _PROJECT_ROOT / "logs"
+RAW_DIR = _PROJECT_ROOT / "data" / "raw"

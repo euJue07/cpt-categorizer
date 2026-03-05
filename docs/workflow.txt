@@ -23,8 +23,8 @@ Role: Assign the most appropriate Section, Subsection, and detail fields based o
 
 Tasks:
 
-* Match cleaned phrases against Section and Subsection vocabulary (from `cpt_section_subsection.json`)
-* Map concepts to detail dimensions (e.g., method, sample\_type, location, analyte) using `cpt_detail.json`
+* Match cleaned phrases against Section and Subsection vocabulary (from `schema/sections.json`, `schema/subsections.json`)
+* Map concepts to detail dimensions (e.g., method, sample\_type, location, analyte) using `schema/dimensions.json`
 * Apply priority rules or heuristics when multiple matches are possible
 * Defer ambiguous decisions to Scoring Agent
 * Do not normalize values — rely on the Normalizer Agent
@@ -32,7 +32,7 @@ Tasks:
 
 Maintains:
 
-* Reference files: `cpt_section_subsection.json`, `cpt_detail.json`
+* Reference files: `schema/sections.json`, `schema/subsections.json`, `schema/dimensions.json`
 
 3. Normalizer Agent
 
@@ -43,13 +43,13 @@ Tasks:
 * Convert phrases and tag values into standardized `dimension:value` form
 * Apply formatting conventions (snake\_case, lowercase, strict spelling)
 * Resolve synonyms and unify equivalents
-* Ensure outputs exist under valid dimensions in `cpt_detail.json`
+* Ensure outputs exist under valid dimensions in `schema/dimensions.json`
 * Reject or defer non-matching terms to Schema Compliance Agent
 
 Maintains:
 
-* Reference file: `cpt_detail_rule.json`
-* Uses `cpt_detail.json` for validation
+* Reference file: `schema/dimensions.json` (and optional formatting rules when added under `schema/` or `references/`)
+* Uses `schema/dimensions.json` for validation
 
 4. Scoring Agent
 
@@ -63,7 +63,7 @@ Tasks:
 
 Evaluates:
 
-* `section_subsection.json`, `cpt_detail.json`, internal logs
+* `schema/sections.json`, `schema/subsections.json`, `schema/dimensions.json`, internal logs
 
 Maintains:
 
@@ -84,7 +84,7 @@ Tasks:
 
 Maintains:
 
-* Reference files: `cpt_section_subsection.json`, `cpt_detail.json`, `cpt_detail_rule.json`
+* Reference files: `schema/sections.json`, `schema/subsections.json`, `schema/dimensions.json` (and optional rule file when added)
 
 6. Logging & Feedback Agent
 
@@ -118,7 +118,7 @@ Tasks:
 
 Maintains:
 
-* Proposed updates to: `cpt_detail.json`, `cpt_section_subsection.json`
+* Proposed updates to: `schema/dimensions.json`, `schema/sections.json`, `schema/subsections.json`
 * Version history (linked to Schema Version Tracker)
 
 8. Correction Agent
@@ -146,9 +146,10 @@ Tasks:
 * Generate schema version ID/hash on updates
 * Store schema snapshots:
 
-  * `cpt_detail.json`
-  * `cpt_section_subsection.json`
-  * `cpt_detail_rule.json`
+  * `schema/dimensions.json`
+  * `schema/sections.json`
+  * `schema/subsections.json`
+  * (Optional rule file when added under `schema/` or `references/`)
 * Tag each classification output with schema version
 * Maintain a change log (what, when, who)
 * Support rollback and compatibility

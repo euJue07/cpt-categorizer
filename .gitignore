@@ -1,3 +1,12 @@
+# Cursor (skills, workspace state; run scripts/install_cursor_skills.sh to refresh skills)
+.cursor/
+
+# Agent guidance (project-specific, often local)
+AGENTS.md
+
+# Cursor skills installer (optional local script)
+scripts/install_cursor_skills.sh
+
 # Data
 /data/
 
