@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
@@ -265,3 +266,55 @@ def test_pipeline_suggestors_write_store_governors_resolve_pending(tmp_path: Pat
     assert section_suggestion["type"] == "section"
     assert section_suggestion.get("suggested_key") == "wound_care"
     assert section_suggestion["status"] in ("accepted", "rejected", "duplicate")
+
+
+@pytest.mark.generate_tags
+def test_run_pipeline_sample_n_random_seed_reproducible(tmp_path: Path):
+    """With sample_n and random_seed, exactly sample_n rows are processed and the same rows on repeat."""
+    pytest.importorskip("pandas")
+    csv_path = tmp_path / "cpt.csv"
+    rows = ["CPTDesc,CPTDescKey"] + [f"D{i},K{i}" for i in range(10)]
+    csv_path.write_text("\n".join(rows))
+
+    class StubTaggingAgent:
+        def classify_sections(self, text_description: str, confidence_threshold: float = 0.5):
+            return [("lab", 0.9)]
+
+        def classify_subsections(
+            self, section: str, text_description: str, confidence_threshold: float = 0.5
+        ):
+            return [("chemistry", 0.9)]
+
+        def classify_dimensions(
+            self, section: str, subsection: str, text_description: str
+        ):
+            return {"actual": {}, "proposed": {"existing_dimensions": {}, "new_dimensions": {}}}
+
+    with patch("cpt_categorizer.pipeline.LOG_DIR", tmp_path), patch(
+        "cpt_categorizer.pipeline.TaggingAgent", return_value=StubTaggingAgent()
+    ):
+        run_pipeline(
+            csv_path=csv_path,
+            sample_n=3,
+            random_seed=42,
+            col_name_desc="CPTDesc",
+            col_name_key="CPTDescKey",
+        )
+    category_path = tmp_path / "category_result.csv"
+    assert category_path.exists()
+    first_run_descs = set(pd.read_csv(category_path)["CPTDesc"].astype(str))
+
+    with patch("cpt_categorizer.pipeline.LOG_DIR", tmp_path), patch(
+        "cpt_categorizer.pipeline.TaggingAgent", return_value=StubTaggingAgent()
+    ):
+        run_pipeline(
+            csv_path=csv_path,
+            sample_n=3,
+            random_seed=42,
+            col_name_desc="CPTDesc",
+            col_name_key="CPTDescKey",
+        )
+    second_run_descs = set(pd.read_csv(category_path)["CPTDesc"].astype(str))
+
+    assert len(first_run_descs) == 3
+    assert first_run_descs == second_run_descs

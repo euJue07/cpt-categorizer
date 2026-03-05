@@ -181,12 +181,18 @@ def run_pipeline(
     col_name_key="CPTDescKey",
     suggestions_path: Optional[Path] = None,
     tagging_cache_path: Optional[Path] = None,
+    sample_n: Optional[int] = None,
+    random_seed: Optional[int] = None,
 ):
     import pandas as pd
     from tqdm import tqdm
 
     df = pd.read_csv(csv_path).dropna(subset=[col_name_desc])
-    top_cpts = df.head(top_n)
+    if sample_n is not None:
+        n = min(sample_n, len(df))
+        cpts = df.sample(n=n, random_state=random_seed if random_seed is not None else 42)
+    else:
+        cpts = df.head(top_n)
     schema_contract = load_schema_contract()
 
     os.makedirs(LOG_DIR, exist_ok=True)
@@ -266,7 +272,7 @@ def run_pipeline(
 
     category_rows = []
     dimension_rows = []
-    for idx, row in tqdm(top_cpts.iterrows(), total=len(top_cpts), desc="Tagging CPTs"):
+    for idx, row in tqdm(cpts.iterrows(), total=len(cpts), desc="Tagging CPTs"):
         if debug:
             tqdm.write(f"\n=== Processing CPT {idx:04d} ===")
             tqdm.write(f"Description: {row[col_name_desc]}")
@@ -295,5 +301,11 @@ def run_pipeline(
 
 
 if __name__ == "__main__":
-    top_n_input = input("How many top rows to process? [default: 10]: ").strip()
-    run_pipeline(top_n=int(top_n_input) if top_n_input else 10, debug=True)
+    mode_input = input(
+        "Run mode: 1) First N rows  2) Random trial (5 samples, seed 42) [1/2, default 1]: "
+    ).strip()
+    if mode_input == "2" or mode_input.lower() == "trial":
+        run_pipeline(sample_n=5, random_seed=42, debug=True)
+    else:
+        top_n_input = input("How many top rows to process? [default: 10]: ").strip()
+        run_pipeline(top_n=int(top_n_input) if top_n_input else 10, debug=True)

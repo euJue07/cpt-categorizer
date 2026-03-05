@@ -44,7 +44,18 @@ From the project root:
 python -m cpt_categorizer.pipeline
 ```
 
-You will be prompted for how many top rows to process (default: 10). Outputs are written to `logs/category_result.csv` and `logs/dimension_result.csv`. Token and cost usage are logged to `logs/usage.csv`.
+You will be prompted to choose a run mode:
+
+- **1) First N rows** — Process the first N rows (default 10). You will then be prompted for how many rows.
+- **2) Random trial (5 samples, seed 42)** — Process 5 randomly sampled rows with a fixed random seed for reproducibility. Use this to verify the pipeline works without processing the whole dataset.
+
+Outputs are written to `logs/category_result.csv` and `logs/dimension_result.csv`. Token and cost usage are logged to `logs/usage.csv`.
+
+To run the trial with no prompts (e.g. for scripting):
+
+```bash
+python scripts/run_trial.py
+```
 
 To run the pipeline from Python with custom options:
 
@@ -59,6 +70,9 @@ run_pipeline(
     col_name_desc="CPTDesc",
     col_name_key="CPTDescKey",
 )
+
+# Or use random sampling for a reproducible trial:
+run_pipeline(sample_n=5, random_seed=42, debug=True)
 ```
 
 ## Next steps

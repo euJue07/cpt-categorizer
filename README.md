@@ -20,7 +20,7 @@ An automated categorization of unstandardized Philippine CPT descriptions using 
 │   ├── external       <- Third-party data
 │   ├── interim        <- Intermediate transformed data
 │   ├── processed      <- Final canonical datasets
-│   └── raw            <- Original immutable data (e.g. Maxicare CPT List.csv)
+│   └── raw            <- Original immutable data (e.g. CPT List.csv)
 │
 ├── docs               <- Project documentation (MkDocs)
 │   ├── mkdocs.yml
@@ -68,7 +68,7 @@ An automated categorization of unstandardized Philippine CPT descriptions using 
 
 3. Copy `.env.example` to `.env` and set any required keys (e.g. OpenAI).
 
-Data is not included in the repo. Place your source CSV (e.g. Maxicare CPT List) in `data/raw/`. Run `make data` for instructions if needed.
+Data is not included in the repo. Place your source CSV (e.g. CPT List) in `data/raw/`. Run `make data` for instructions if needed.
 
 ## Run the pipeline
 
@@ -78,7 +78,7 @@ From the project root:
 python -m cpt_categorizer.pipeline
 ```
 
-You will be prompted for how many top rows to process (default 10). The pipeline reads from `data/raw/CPT Desc With Utilization.csv` by default; ensure `data/raw` exists and your CSV has a description column (e.g. `CPTDesc`). Outputs go to `logs/category_result.csv` and `logs/dimension_result.csv`. See [Getting started](docs/docs/getting-started.md) for more options.
+You will be prompted to choose: process the first N rows (default 10) or run a **random trial** (5 samples, seed 42) for reproducible verification. Outputs go to `logs/category_result.csv` and `logs/dimension_result.csv`. To run the trial with no prompts: `python scripts/run_trial.py`. See [Getting started](docs/docs/getting-started.md) for more options.
 
 ---
 
