@@ -87,7 +87,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 - [x] Split current tagging into Section / Subsection / Dimension tagging agents (or three classes in one module).
 - [x] Add Section Suggestor agent; persist suggestions to store; check store before LLM.
 - [x] Add Subsection Suggestor agent; same pattern.
-- [ ] Add Dimension Suggestor agent; same pattern.
+- [x] Add Dimension Suggestor agent; same pattern.
 - [ ] Add Section Governor agent; resolve pending suggestions using schema + store first; LLM only for novel suggestions.
 - [ ] Add Subsection Governor agent; same pattern.
 - [ ] Add Dimension Governor agent; same pattern.
@@ -101,6 +101,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 
 ## Recent completions
 
+- **2025-03-05** — Added DimensionSuggestorAgent (dimension_suggestor.py) with store-before-LLM, context=section:subsection:dim_key:hash(desc); suggest_dimensions() for existing_dimensions (no LLM) and new_dimensions (LLM for suggested_description); tests/test_dimension_suggestor.py (invalid inputs, store hit, new existing_dim, new new_dim, duplicate key); export in agents/__init__.py.
 - **2025-03-05** — Added SubsectionSuggestorAgent (subsection_suggestor.py) with store-before-LLM, context=section:hash(desc), parent_section in record; tests/test_subsection_suggestor.py (invalid inputs, store hit, new suggestion, duplicate key); export in agents/__init__.py.
 - **2025-03-05** — Added SectionSuggestorAgent (section_suggestor.py) with store-before-LLM, context/key lookup, append; tests/test_section_suggestor.py (store hit, new suggestion, duplicate key); export in agents/__init__.py.
 - **2025-03-05** — Split tagging into SectionTaggingAgent, SubsectionTaggingAgent, DimensionTaggingAgent in tagging.py; TaggingAgent now orchestrates the three; tests patched for sub-agents; agents/__init__.py exports new classes.
