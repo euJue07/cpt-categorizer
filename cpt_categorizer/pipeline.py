@@ -1,10 +1,19 @@
 import os
 from datetime import datetime
+from typing import Any
+from typing import Optional
 
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
+from cpt_categorizer.agents.dimension_governor import DimensionGovernorAgent
+from cpt_categorizer.agents.dimension_suggestor import DimensionSuggestorAgent
 from cpt_categorizer.agents.normalizer import NormalizerAgent
 from cpt_categorizer.agents.parsing import ParsingAgent
+from cpt_categorizer.agents.section_governor import SectionGovernorAgent
+from cpt_categorizer.agents.section_suggestor import SectionSuggestorAgent
+from cpt_categorizer.agents.subsection_governor import SubsectionGovernorAgent
+from cpt_categorizer.agents.subsection_suggestor import SubsectionSuggestorAgent
 from cpt_categorizer.agents.tagging import TaggingAgent
+from cpt_categorizer.agents.tagging import empty_dimensions
 from cpt_categorizer.config.directory import LOG_DIR
 from cpt_categorizer.config.directory import RAW_DIR
 from cpt_categorizer.schema_contract import load_schema_contract
@@ -29,12 +38,93 @@ def process_row(
     col_name_key,
     category_rows,
     dimension_rows,
+    *,
+    section_suggestor: Optional[SectionSuggestorAgent] = None,
+    subsection_suggestor: Optional[SubsectionSuggestorAgent] = None,
+    dimension_suggestor: Optional[DimensionSuggestorAgent] = None,
+    confidence_threshold: float = 0.5,
 ):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     base_code = f"{idx:04d}"
     raw_desc = row[col_name_desc]
     parsed_desc = parsing_agent.parse(raw_desc)
-    result = tagging_agent.tag_entry(text_description=parsed_desc, code=base_code)
+
+    # Step-by-step tagging with suggestor hooks (replicates TaggingAgent.generate_tags logic)
+    candidate_sections = tagging_agent.classify_sections(
+        parsed_desc, confidence_threshold=confidence_threshold
+    )
+    if not candidate_sections:
+        return
+
+    tags: list[dict[str, Any]] = []
+    for section, section_conf in candidate_sections:
+        if section == "others":
+            if section_suggestor is not None:
+                section_suggestor.suggest_section(parsed_desc, source=base_code)
+            candidate_subsections = tagging_agent.classify_subsections(
+                section, parsed_desc, confidence_threshold=confidence_threshold
+            )
+            for subsection, subsection_conf in candidate_subsections:
+                combined_conf = (section_conf + subsection_conf) / 2
+                tags.append(
+                    {
+                        "section": section,
+                        "subsection": subsection,
+                        "confidence": float(combined_conf),
+                        "dimensions": empty_dimensions(),
+                    }
+                )
+            continue
+
+        candidate_subsections = tagging_agent.classify_subsections(
+            section, parsed_desc, confidence_threshold=confidence_threshold
+        )
+        if not candidate_subsections:
+            if subsection_suggestor is not None:
+                subsection_suggestor.suggest_subsection(
+                    section, parsed_desc, source=base_code
+                )
+            continue
+
+        for subsection, subsection_conf in candidate_subsections:
+            dimensions = tagging_agent.classify_dimensions(
+                section, subsection, parsed_desc
+            )
+            proposed = dimensions.get("proposed") or {}
+            has_proposed = bool(
+                proposed.get("existing_dimensions") or proposed.get("new_dimensions")
+            )
+            if dimension_suggestor is not None and has_proposed:
+                dimension_suggestor.suggest_dimensions(
+                    section,
+                    subsection,
+                    parsed_desc,
+                    proposed,
+                    source=base_code,
+                )
+            actual_values = [
+                item["confidence"]
+                for values in dimensions.get("actual", {}).values()
+                for item in values
+                if isinstance(item, dict) and "confidence" in item
+            ]
+            max_dim_conf = max(actual_values) if actual_values else 0.0
+            combined_conf = (
+                (section_conf + subsection_conf + max_dim_conf) / 3
+                if subsection != "others"
+                else (section_conf + subsection_conf) / 2
+            )
+            dims_for_tag = (
+                dimensions if subsection != "others" else empty_dimensions()
+            )
+            tags.append(
+                {
+                    "section": section,
+                    "subsection": subsection,
+                    "confidence": float(combined_conf),
+                    "dimensions": dims_for_tag,
+                }
+            )
 
     def append_dim_rows(code, source, is_prop_dim, is_prop_val):
         for dim, values in source.items():
@@ -67,7 +157,7 @@ def process_row(
             }
         )
 
-    for i, tag in enumerate(result["tags"]):
+    for i, tag in enumerate(tags):
         normalized_tag = normalizer_agent.normalize_tag(tag)
         compliant_tag, _warnings = compliance_agent.validate_tag(normalized_tag)
         if compliant_tag is None:
@@ -146,6 +236,33 @@ def run_pipeline(
     normalizer_agent = NormalizerAgent()
     compliance_agent = SchemaComplianceAgent(schema_contract=schema_contract, mode="balanced")
 
+    section_suggestor = SectionSuggestorAgent(
+        section_schema=schema_contract.sections,
+        schema_version=schema_contract.version,
+    )
+    subsection_suggestor = SubsectionSuggestorAgent(
+        section_schema=schema_contract.sections,
+        subsection_schema=schema_contract.subsections,
+        schema_version=schema_contract.version,
+    )
+    dimension_suggestor = DimensionSuggestorAgent(
+        dimension_schema=schema_contract.dimensions,
+        subsection_schema=schema_contract.subsections,
+        schema_version=schema_contract.version,
+    )
+    section_governor = SectionGovernorAgent(
+        section_schema=schema_contract.sections,
+        schema_version=schema_contract.version,
+    )
+    subsection_governor = SubsectionGovernorAgent(
+        subsection_schema=schema_contract.subsections,
+        schema_version=schema_contract.version,
+    )
+    dimension_governor = DimensionGovernorAgent(
+        dimension_schema=schema_contract.dimensions,
+        schema_version=schema_contract.version,
+    )
+
     category_rows = []
     dimension_rows = []
     for idx, row in tqdm(top_cpts.iterrows(), total=len(top_cpts), desc="Tagging CPTs"):
@@ -164,7 +281,14 @@ def run_pipeline(
             col_name_key=col_name_key,
             category_rows=category_rows,
             dimension_rows=dimension_rows,
+            section_suggestor=section_suggestor,
+            subsection_suggestor=subsection_suggestor,
+            dimension_suggestor=dimension_suggestor,
         )
+
+    section_governor.resolve_pending_sections()
+    subsection_governor.resolve_pending_subsections()
+    dimension_governor.resolve_pending_dimensions()
 
     write_output_csvs(category_rows, dimension_rows)
 

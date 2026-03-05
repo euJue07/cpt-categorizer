@@ -89,7 +89,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 - [x] Add Section Governor agent; resolve pending suggestions using schema + store first; LLM only for novel suggestions.
 - [x] Add Subsection Governor agent; same pattern.
 - [x] Add Dimension Governor agent; same pattern.
-- [ ] Wire taggers, suggestors, and governors in pipeline (trigger suggestors on "outside" / "proposed"; run governors on pending suggestions).
+- [x] Wire taggers, suggestors, and governors in pipeline (trigger suggestors on "outside" / "proposed"; run governors on pending suggestions).
 - [ ] Update docs (e.g. `docs/docs/agent_roles.md`) with 9 agents and suggestion store.
 - [ ] Add unit tests for store and each agent; integration test for pipeline + store + governor resolution.
 - [ ] Persist tagging cache to `data/interim/tagging_cache.json`; load on init.
@@ -99,6 +99,7 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 
 ## Recent completions
 
+- **2025-03-05** — Wired taggers, suggestors, and governors in pipeline: process_row refactored to step-by-step tagging (classify_sections → classify_subsections → classify_dimensions); section suggestor on "others", subsection suggestor on empty subsections, dimension suggestor on proposed dimensions; run_pipeline instantiates all six agents and calls three governors after the tagging loop; tests/test_pipeline.py (suggestor triggers, governor calls); test_process_row_emits_schema_version updated to stub classify_*.
 - **2025-03-05** — Added DimensionGovernorAgent (dimension_governor.py): resolve pending dimension suggestions using schema + store first (duplicate when key in schema and all suggested_values in schema; store reuse by key+parent_section+parent_subsection); LLM only for novel suggestions; log all paths (dimension_governor_duplicate, dimension_governor_store_reuse, dimension_governor); tests/agents/test_dimension_governor.py (9 tests); export in agents/__init__.py.
 - **2025-03-05** — Added SubsectionGovernorAgent (subsection_governor.py): resolve pending subsection suggestions using schema + store first (duplicate / store reuse by key+parent_section); LLM only for novel suggestions; log all paths (subsection_governor_duplicate, subsection_governor_store_reuse, subsection_governor); tests/agents/test_subsection_governor.py (7 tests); export in agents/__init__.py.
 - **2025-03-05** — Added SectionGovernorAgent (section_governor.py): resolve pending section suggestions using schema + store first (duplicate / store reuse); LLM only for novel suggestions; log all paths (section_governor_duplicate, section_governor_store_reuse, section_governor); tests/test_section_governor.py (7 tests); export in agents/__init__.py.

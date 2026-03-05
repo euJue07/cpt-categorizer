@@ -208,29 +208,28 @@ def test_compliance_agent_balanced_mode_normalizes_and_warns(schema_contract):
 
 @pytest.mark.generate_tags
 def test_process_row_emits_schema_version(schema_contract):
+    """process_row uses step-by-step tagging; stub must implement classify_sections/subsections/dimensions."""
+
     class StubTaggingAgent:
-        def tag_entry(self, text_description: str, code: str):
+        def classify_sections(self, text_description: str, confidence_threshold: float = 0.5):
+            return [("imaging", 0.9)]
+
+        def classify_subsections(
+            self, section: str, text_description: str, confidence_threshold: float = 0.5
+        ):
+            return [("xray", 0.9)]
+
+        def classify_dimensions(
+            self, section: str, subsection: str, text_description: str
+        ):
             return {
-                "code": code,
-                "description": text_description,
-                "tags": [
-                    {
-                        "section": "imaging",
-                        "subsection": "xray",
-                        "confidence": 0.9,
-                        "dimensions": {
-                            "actual": {
-                                "Contrast": [
-                                    {"value": "With Contrast", "confidence": 0.9}
-                                ]
-                            },
-                            "proposed": {
-                                "existing_dimensions": {},
-                                "new_dimensions": {},
-                            },
-                        },
-                    }
-                ],
+                "actual": {
+                    "Contrast": [{"value": "With Contrast", "confidence": 0.9}]
+                },
+                "proposed": {
+                    "existing_dimensions": {},
+                    "new_dimensions": {},
+                },
             }
 
     category_rows = []
