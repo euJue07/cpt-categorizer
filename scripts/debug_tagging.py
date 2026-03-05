@@ -1,11 +1,11 @@
+import inspect
 import json
+
 import pandas as pd
 
-from cpt_categorizer.agents.tagging import TaggingAgent
-from cpt_categorizer.config.directory import RAW_DIR
-from cpt_categorizer.config.directory import SCHEMA_DIR
-import inspect
 from cpt_categorizer.agents import tagging
+from cpt_categorizer.agents.tagging import TaggingAgent
+from cpt_categorizer.config.directory import RAW_DIR, SCHEMA_DIR
 
 print(inspect.getfile(tagging.TaggingAgent))
 with open(SCHEMA_DIR / "sections.json") as f:

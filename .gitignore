@@ -7,8 +7,15 @@ AGENTS.md
 # Cursor skills installer (optional local script)
 scripts/install_cursor_skills.sh
 
-# Data
-/data/
+# Data (directory structure kept via .gitkeep; contents ignored)
+/data/*
+!/data/raw/.gitkeep
+!/data/external/.gitkeep
+!/data/interim/.gitkeep
+!/data/processed/.gitkeep
+
+# Logs (generated CSVs not committed)
+logs/*.csv
 
 # Mac OS-specific storage files
 .DS_Store

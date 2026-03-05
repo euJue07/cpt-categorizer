@@ -6,113 +6,105 @@ An automated categorization of unstandardized Philippine CPT descriptions using 
 
 ---
 
-## 📁 Project Organization
+## Project organization
 
 ```
-├── LICENSE            <- Open-source license if one is chosen
-├── Makefile           <- Makefile with convenience commands like `make data` or `make train`
-├── README.md          <- The top-level README for developers using this project.
-├── data
-│   ├── external       <- Data from third party sources.
-│   ├── interim        <- Intermediate data that has been transformed.
-│   ├── processed      <- The final, canonical data sets for modeling.
-│   └── raw            <- The original, immutable data dump.
+├── Makefile           <- Convenience commands (lint, format, lint-schema, etc.)
+├── README.md          <- This file
+├── pyproject.toml     <- Project config, build (flit), Black, Ruff
+├── requirements.txt   <- Python dependencies (use pip install -e . for local package)
+├── setup.cfg          <- Legacy linter config (see pyproject.toml for Ruff/Black)
+├── pytest.ini         <- Pytest markers and config
 │
-├── docs               <- Project documentation and visual references
+├── data               <- Data directory (not in repo; add CSV to data/raw/)
+│   ├── external       <- Third-party data
+│   ├── interim        <- Intermediate transformed data
+│   ├── processed      <- Final canonical datasets
+│   └── raw            <- Original immutable data (e.g. Maxicare CPT List.csv)
 │
-├── models             <- Trained and serialized models, model predictions, or model summaries
+├── docs               <- Project documentation (MkDocs)
+│   ├── mkdocs.yml
+│   ├── workflow.txt
+│   └── docs/          <- MkDocs source pages (index, getting-started, agent_roles)
 │
-├── notebooks          <- Jupyter notebooks (e.g., `1.0-jme-cpt-parsing-analysis.ipynb`)
+├── logs               <- Pipeline output (CSVs); generated files are gitignored
 │
-├── pyproject.toml     <- Project configuration and tool integration for `cpt_categorizer`
-├── requirements.txt   <- The requirements file for reproducing the analysis environment
-├── setup.cfg          <- Configuration file for flake8 and other linters
+├── schema             <- CPT taxonomy (single source of truth)
+│   ├── dimensions.json
+│   ├── sections.json
+│   └── subsections.json
 │
-├── references         <- Data dictionaries, schema snapshots, schema version logs, and manuals
+├── scripts            <- One-off and utility scripts
+│   ├── lint_schema.py
+│   └── debug_tagging.py
 │
-├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures        <- Generated graphics and figures for reporting
+├── tests              <- Pytest tests
+│   └── agents/
+│       └── test_tagging.py
 │
-└── cpt_categorizer    <- Source code
-    ├── __init__.py             <- Initializes the Python module
-    ├── config.py               <- Stores shared configurations
-    ├── dataset.py              <- Ingests or prepares datasets
-    ├── features.py             <- Feature extraction and transformation
-    ├── modeling
-    │   ├── __init__.py
-    │   ├── predict.py          <- Model inference logic
-    │   └── train.py            <- Model training logic
-    ├── plots.py                <- Visualization utilities
-    └── agents
-        ├── parsing.py          <- Logic for Parsing Agent
-        ├── tagging.py          <- Tagging Agent implementation
-        ├── normalization.py    <- Normalizer Agent logic
-        ├── scoring.py          <- Scoring Agent
-        ├── compliance.py       <- Schema Compliance Agent
-        ├── logging.py          <- Logging & Feedback Agent
-        ├── correction.py       <- Correction Agent
-        ├── evolution.py        <- Schema Evolution Agent
-        └── versioning.py       <- Schema Version Tracker
-```
-
----
-
-## 🧠 AI Agent Framework Overview
-
-This project uses a modular AI agent framework to classify unstandardized CPT phrases. Each agent performs a specific role in the classification pipeline. For full descriptions and agent responsibilities, see [`docs/agent_roles.md`](docs/agent_roles.md).
-
-**Key Agent Roles:**
-
-* **Parsing Agent**: Cleans and prepares raw CPT phrases
-* **Tagging Agent**: Identifies Sections, Subsections, and candidate detail tags
-* **Normalizer Agent**: Standardizes and schema-aligns detail tags
-* **Scoring Agent**: Assigns confidence levels to each tag and classification
-* **Schema Compliance Agent**: Validates against current schema and formatting rules
-* **Logging & Feedback Agent**: Captures failures and borderline cases
-* **Correction Agent**: Applies manual corrections and stores retraining data
-* **Schema Evolution Agent**: Proposes updates to schema based on real-world use
-* **Schema Version Tracker**: Maintains snapshots and traceability for schema changes
-
-### ⚙️ Key Schema Files
-
-The **`schema/`** directory is the single source of truth for the CPT taxonomy and dimensions. All agents and pipeline code load from these files:
-
-* `schema/sections.json` — Top-level sections and their subsections (e.g. anesthesiology, dental, laboratory, imaging, procedures)
-* `schema/subsections.json` — Subsection definitions and allowed dimensions per section
-* `schema/dimensions.json` — Dimension definitions with allowed values (used for tagging and normalization)
-* Schema snapshots and version logs stored in `references/`
-
----
-
-## 🔁 Agent Interaction Flow
-
-```
-1. Raw CPT Description → Parsing Agent
-2. Parsing Agent → cleans → Tagging Agent
-3. Tagging Agent → identifies tags → Normalizer Agent
-4. Normalizer Agent → standardizes → Scoring Agent
-5. Scoring Agent → scores → Schema Compliance Agent
-6. Schema Compliance Agent:
-   - If valid → Final Output Generator
-   - If invalid → Logging & Feedback Agent
-7. Logging & Feedback Agent → Correction Agent
-8. Correction Agent → Schema Evolution Agent
-9. Schema Evolution Agent → loops back to Schema Compliance Agent
+└── cpt_categorizer    <- Source package
+    ├── __init__.py
+    ├── pipeline.py
+    ├── agents/
+    │   └── tagging.py
+    ├── config/
+    │   ├── directory.py
+    │   └── openai.py
+    └── utils/
+        └── logging.py
 ```
 
 ---
 
-## 📤 Final Output
+## Development setup
 
-* Validated and classified CPT record with:
+1. Create and activate a virtual environment (Python 3.10+).
+2. Install dependencies and the package in editable mode:
 
-  * Section, Subsection, Details
-  * Confidence scores
-  * Schema version ID
-* Exported as CSV, JSON, or database row
+   ```bash
+   pip install -r requirements.txt
+   pip install -e .
+   ```
+
+3. Copy `.env.example` to `.env` and set any required keys (e.g. OpenAI).
+
+Data is not included in the repo. Place your source CSV (e.g. Maxicare CPT List) in `data/raw/`. Run `make data` for instructions if needed.
 
 ---
 
-## ✅ Status
+## AI agent framework
 
-This project is in development. Schema proposals, rule evolution, and scoring logic are actively evolving with production feedback.
+This project uses a modular AI agent framework to classify unstandardized CPT phrases. For agent roles and current implementation status, see [Agent roles](docs/docs/agent_roles.md).
+
+**Implemented:**
+
+- **Tagging Agent**: Identifies sections, subsections, and candidate detail tags from CPT descriptions using `schema/sections.json`, `schema/subsections.json`, and `schema/dimensions.json`.
+
+**Planned:** Parsing, Normalizer, Scoring, Schema Compliance, Logging & Feedback, Correction, Schema Evolution, Schema Version Tracker (see docs).
+
+### Schema files
+
+- `schema/sections.json` — Top-level sections and subsections
+- `schema/subsections.json` — Subsection definitions and allowed dimensions per section
+- `schema/dimensions.json` — Dimension definitions and allowed values for tagging/normalization
+
+---
+
+## Lint and format
+
+- **Lint**: `make lint` (Ruff + Black check)
+- **Format**: `make format` (Black)
+- **Schema**: `make lint-schema` (validates dimensions.json: no duplicates, snake_case, sort)
+
+---
+
+## Final output (goal)
+
+- Validated CPT record with Section, Subsection, Details, confidence scores, and schema version ID
+- Export as CSV, JSON, or database row
+
+---
+
+## Status
+
+In development. Schema and scoring logic are evolving with feedback.
