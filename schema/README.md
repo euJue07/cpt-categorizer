@@ -2,6 +2,8 @@
 
 The **`schema/`** directory is the single source of truth for the CPT taxonomy and dimensions. All pipeline code and agents load from these files.
 
+Runtime loading is centralized via `cpt_categorizer/schema_contract.py`, which validates cross-file references and computes a schema version hash used in pipeline outputs/logs.
+
 ## Files
 
 | File | Role |
@@ -19,3 +21,7 @@ When editing schema files:
 - **Order**: Each dimension’s `values` array should be **alphabetically sorted** for stable diffs and to satisfy the schema linter.
 
 Run `make lint-schema` to validate these rules.
+
+## Schema versioning
+
+The runtime computes a deterministic schema version hash from `sections.json`, `subsections.json`, and `dimensions.json` contents. This version is attached to generated category and dimension outputs so downstream consumers can trace which schema revision produced each row.

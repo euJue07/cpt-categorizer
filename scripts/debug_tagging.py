@@ -1,24 +1,20 @@
 import inspect
-import json
 
 import pandas as pd
 
 from cpt_categorizer.agents import tagging
 from cpt_categorizer.agents.tagging import TaggingAgent
-from cpt_categorizer.config.directory import RAW_DIR, SCHEMA_DIR
+from cpt_categorizer.config.directory import RAW_DIR
+from cpt_categorizer.schema_contract import load_schema_contract
 
 print(inspect.getfile(tagging.TaggingAgent))
-with open(SCHEMA_DIR / "sections.json") as f:
-    section_schema = json.load(f)
-with open(SCHEMA_DIR / "subsections.json") as f:
-    subsection_schema = json.load(f)
-with open(SCHEMA_DIR / "dimensions.json") as f:
-    dimension_schema = json.load(f)
+schema_contract = load_schema_contract()
 
 shared_agent = TaggingAgent(
-    section_schema=section_schema,
-    subsection_schema=subsection_schema,
-    dimension_schema=dimension_schema,
+    section_schema=schema_contract.sections,
+    subsection_schema=schema_contract.subsections,
+    dimension_schema=schema_contract.dimensions,
+    schema_version=schema_contract.version,
 )
 
 

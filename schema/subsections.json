@@ -1,14 +1,14 @@
 {
   "anesthesiology": {
     "general_anesthesia": {
-      "description": "Induction of complete unconsciousness using inhalational or intravenous agents, typically for major surgeries.",
+      "description": "Induction of complete unconsciousness with airway management, using inhalational or intravenous agents, typically for major surgeries; includes monitored anesthesia care (MAC) when applicable.",
       "dimensions": [
         "device_type",
         "procedure_type"
       ]
     },
     "regional_anesthesia": {
-      "description": "Anesthesia targeting a specific region of the body (e.g., spinal, epidural, nerve blocks) without loss of consciousness.",
+      "description": "Anesthesia targeting a specific region of the body without loss of consciousness: neuraxial (spinal, epidural) or peripheral nerve blocks.",
       "dimensions": [
         "anatomic_site",
         "procedure_type",
@@ -31,7 +31,7 @@
       ]
     },
     "obstetric_anesthesia": {
-      "description": "Anesthesia for obstetric patients (e.g., labor and delivery anesthesia).",
+      "description": "Anesthesia for obstetric patients: labor analgesia, cesarean anesthesia, and removal of epidural or other neuraxial analgesia.",
       "dimensions": [
         "delivery_phase",
         "procedure_type",
@@ -42,7 +42,7 @@
   },
   "dental": {
     "dental_diagnostics": {
-      "description": "Dental examination and imaging (e.g., X-rays) for diagnosis of oral health issues.",
+      "description": "Dental examination and imaging for diagnosis of oral health issues (e.g., intraoral and extraoral X-rays, CBCT when applicable).",
       "dimensions": [
         "imaging_view",
         "anatomic_site",
@@ -58,7 +58,7 @@
       ]
     },
     "restorative_dental": {
-      "description": "Dental procedures for restoring tooth structure (e.g., fillings, crowns, root canals).",
+      "description": "Dental procedures for restoring tooth structure (e.g., fillings, crowns, inlays, onlays); root canal therapy is endodontic.",
       "dimensions": [
         "material_type",
         "procedure_type",
@@ -107,14 +107,14 @@
   },
   "laboratory": {
     "chemistry": {
-      "description": "Chemical analysis of body fluids (e.g., blood glucose, electrolytes, metabolic panels).",
+      "description": "Chemical analysis of body fluids (e.g., electrolytes, liver function, renal function, blood glucose, metabolic panels).",
       "dimensions": [
         "analyte",
         "test_type"
       ]
     },
     "hematology": {
-      "description": "Tests related to blood cells and components (e.g., CBC, platelet count, hemoglobin).",
+      "description": "Tests related to blood cells and components (e.g., CBC, platelet count, hemoglobin, coagulation screening).",
       "dimensions": [
         "analyte",
         "test_type"
@@ -156,7 +156,7 @@
       ]
     },
     "microbiology": {
-      "description": "Culture and identification of microbes (e.g., blood culture, stool culture).",
+      "description": "Culture and identification of microbes: bacterial, fungal, viral, and parasitic (e.g., blood culture, stool culture).",
       "dimensions": [
         "test_type",
         "organism_target"
@@ -170,7 +170,7 @@
       ]
     },
     "toxicology": {
-      "description": "Screening for toxins and drugs of abuse in blood or urine.",
+      "description": "Screening for toxins, drugs of abuse, and therapeutic drug monitoring in blood or urine.",
       "dimensions": [
         "test_type"
       ]
@@ -178,7 +178,7 @@
   },
   "medical_specialties": {
     "cardiology": {
-      "description": "Heart-related diagnosis and management (e.g., ECG, echocardiograms, cardiac catheterization).",
+      "description": "Heart-related diagnosis and management (e.g., ECG, echocardiograms, cardiac catheterization, electrophysiology).",
       "dimensions": [
         "procedure_type",
         "diagnostic_tool",
@@ -186,7 +186,7 @@
       ]
     },
     "pulmonology": {
-      "description": "Respiratory system disorders and lung function tests (e.g., spirometry).",
+      "description": "Respiratory system disorders and lung function (e.g., spirometry, bronchoscopy, sleep studies when in scope).",
       "dimensions": [
         "procedure_type",
         "diagnostic_tool",
@@ -202,14 +202,14 @@
       ]
     },
     "psychiatry": {
-      "description": "Mental health evaluations and therapy (e.g., psychological assessment).",
+      "description": "Mental health evaluations and therapy (e.g., psychiatric evaluation, psychotherapy, pharmacotherapy, psychological assessment).",
       "dimensions": [
         "procedure_type",
         "assessment_tool"
       ]
     },
     "rehabilitation": {
-      "description": "Therapeutic interventions (e.g., physical therapy, occupational therapy) to restore function.",
+      "description": "Therapeutic interventions to restore function: physical therapy (PT), occupational therapy (OT), speech-language therapy; includes rehabilitation procedures (e.g., therapeutic exercise, neuromuscular re-education).",
       "dimensions": [
         "goal",
         "therapist_type",
@@ -279,21 +279,21 @@
   },
   "pathology": {
     "histopathology": {
-      "description": "Microscopic examination of tissues (e.g., surgical biopsy analysis).",
+      "description": "Microscopic examination of tissues: surgical pathology, biopsy, and resection specimens.",
       "dimensions": [
         "test_type",
         "evaluation_scope"
       ]
     },
     "cytopathology": {
-      "description": "Examination of cells (e.g., Pap smear, fine needle aspiration cytology).",
+      "description": "Examination of cells (e.g., Pap smear, fine needle aspiration cytology, fluid cytology).",
       "dimensions": [
         "test_type",
         "evaluation_scope"
       ]
     },
     "molecular_pathology": {
-      "description": "Genetic and molecular diagnostic testing (e.g., PCR, genomic assays).",
+      "description": "Genetic and molecular diagnostic testing (e.g., NGS, PCR, FISH, biomarker assays).",
       "dimensions": [
         "test_type",
         "target_gene_or_locus"
@@ -310,7 +310,7 @@
   },
   "imaging": {
     "xray": {
-      "description": "X-ray radiography procedures.",
+      "description": "Plain radiography and fluoroscopy procedures.",
       "dimensions": [
         "imaging_view",
         "view_count",
@@ -343,7 +343,7 @@
       ]
     },
     "nuclear_medicine": {
-      "description": "Nuclear medicine scans (e.g., PET, SPECT).",
+      "description": "Nuclear medicine imaging (e.g., PET, SPECT, planar scintigraphy).",
       "dimensions": [
         "anatomic_site",
         "uptake_result",
@@ -384,7 +384,7 @@
       ]
     },
     "vascular_interventions": {
-      "description": "Procedures on the vascular system (e.g., angioplasty, stent placement, vascular grafts).",
+      "description": "Procedures on the vascular system (e.g., arterial or venous access, angioplasty, stenting, embolization).",
       "dimensions": [
         "procedure_type",
         "anatomic_site",
@@ -408,7 +408,7 @@
       ]
     },
     "therapeutic_non_surgical": {
-      "description": "Non-surgical therapeutic interventions (e.g., infusion therapy, dialysis).",
+      "description": "Non-surgical therapeutic interventions (e.g., infusion, dialysis, therapeutic apheresis).",
       "dimensions": [
         "therapy_type",
         "method",

@@ -17,6 +17,7 @@ def log_agent_usage(
     is_error,
     error_message,
     request_id=None,
+    schema_version="",
 ):
     """
     Append a log row to the usage log CSV file.
@@ -35,6 +36,7 @@ def log_agent_usage(
         is_error (bool): Whether the result was due to a processing error.
         error_message (str): Error message if applicable.
         request_id (str, optional): Identifier for the request.
+        schema_version (str, optional): Schema contract version hash.
     """
     cost_usd = round(
         int(prompt_tokens) * GPT4O_COST_INPUT
@@ -58,6 +60,7 @@ def log_agent_usage(
                     "total_tokens",
                     "cost_usd",
                     "request_id",
+                    "schema_version",
                     "model",
                     "runtime_ms",
                     "success",
@@ -76,6 +79,7 @@ def log_agent_usage(
                 total_tokens,
                 cost_usd,
                 request_id,
+                schema_version,
                 model,
                 runtime_ms,
                 success,

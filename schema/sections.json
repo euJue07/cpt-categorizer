@@ -1,6 +1,6 @@
 {
   "anesthesiology": {
-    "description": "Medical specialty dedicated to anesthesia administration and perioperative patient care, including pain management.",
+    "description": "Medical specialty dedicated to anesthesia administration and perioperative patient care, including pain management and sedation (e.g., moderate, deep, conscious).",
     "subsections": [
       "general_anesthesia",
       "regional_anesthesia",
@@ -10,7 +10,7 @@
     ]
   },
   "dental": {
-    "description": "Clinical dentistry services focusing on prevention, diagnosis, and treatment of diseases affecting the teeth and oral cavity.",
+    "description": "Clinical dentistry services focusing on prevention, diagnosis, and treatment of diseases affecting the teeth and oral cavity; may be reported with CDT (Code on Dental Procedures and Nomenclature) or CPT where applicable.",
     "subsections": [
       "dental_diagnostics",
       "preventive_dental",
@@ -23,7 +23,7 @@
     ]
   },
   "laboratory": {
-    "description": "Laboratory analysis of clinical specimens (blood, urine, tissues, etc.) for the diagnosis and monitoring of disease.",
+    "description": "Laboratory analysis of clinical specimens (blood, urine, tissues, etc.), including molecular and genetic testing where relevant, for the diagnosis and monitoring of disease.",
     "subsections": [
       "chemistry",
       "hematology",
@@ -38,7 +38,7 @@
     ]
   },
   "medical_specialties": {
-    "description": "Medical specialties focusing on the diagnosis and management of disorders in specific organ systems or patient populations.",
+    "description": "Medicine section services: medical specialties focusing on specialty exams, testing, and non-surgical interventions for specific organ systems or patient populations.",
     "subsections": [
       "cardiology",
       "pulmonology",
@@ -56,7 +56,7 @@
     ]
   },
   "pathology": {
-    "description": "Analysis of tissues, cells, and bodily fluids (microscopically and in lab) to diagnose disease.",
+    "description": "Analysis of tissues, cells, and bodily fluids (microscopically and in the laboratory), including surgical pathology and autopsy when applicable, to diagnose disease.",
     "subsections": [
       "histopathology",
       "cytopathology",
@@ -65,7 +65,7 @@
     ]
   },
   "imaging": {
-    "description": "Diagnostic imaging techniques (e.g., X-ray, CT, MRI, ultrasound) to visualize internal body structures.",
+    "description": "Radiology procedures and diagnostic imaging (e.g., X-ray, CT, MRI, ultrasound, nuclear medicine) to visualize internal body structures.",
     "subsections": [
       "xray",
       "ultrasound",
@@ -75,7 +75,7 @@
     ]
   },
   "procedures": {
-    "description": "Clinical interventions, including surgical operations and other therapeutic procedures.",
+    "description": "Surgery and other procedural sections: surgical operations and invasive procedures; excludes evaluation and management (E/M).",
     "subsections": [
       "minor_clinical_procedures",
       "major_surgical_procedures",
