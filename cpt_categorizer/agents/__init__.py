@@ -1,4 +1,5 @@
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
+from cpt_categorizer.agents.dimension_governor import DimensionGovernorAgent
 from cpt_categorizer.agents.dimension_suggestor import DimensionSuggestorAgent
 from cpt_categorizer.agents.normalizer import NormalizerAgent
 from cpt_categorizer.agents.parsing import ParsingAgent
@@ -12,6 +13,7 @@ from cpt_categorizer.agents.tagging import SubsectionTaggingAgent
 from cpt_categorizer.agents.tagging import TaggingAgent
 
 __all__ = [
+    "DimensionGovernorAgent",
     "DimensionSuggestorAgent",
     "DimensionTaggingAgent",
     "ParsingAgent",
