@@ -1,6 +1,6 @@
 import csv
 from cpt_categorizer.config.directory import LOG_DIR
-from cpt_categorizer.config.openai import GPT4O_COST_INPUT, GPT4O_COST_OUTPUT
+from cpt_categorizer.config.openai import get_model_costs
 
 
 def log_agent_usage(
@@ -38,9 +38,9 @@ def log_agent_usage(
         request_id (str, optional): Identifier for the request.
         schema_version (str, optional): Schema contract version hash.
     """
+    input_rate, output_rate = get_model_costs(model)
     cost_usd = round(
-        int(prompt_tokens) * GPT4O_COST_INPUT
-        + int(completion_tokens) * GPT4O_COST_OUTPUT,
+        int(prompt_tokens) * input_rate + int(completion_tokens) * output_rate,
         6,
     )
     LOG_DIR.mkdir(parents=True, exist_ok=True)

@@ -93,12 +93,13 @@ See also: [Agent roles](docs/agent_roles.md), full plan in `.cursor/plans/`.
 - [x] Update docs (e.g. `docs/docs/agent_roles.md`) with 9 agents and suggestion store.
 - [x] Add unit tests for store and each agent; integration test for pipeline + store + governor resolution.
 - [x] Persist tagging cache to `data/interim/tagging_cache.json`; load on init.
-- [ ] Ensure every token/cost is logged: log cache and store hits with 0 tokens; use model-aware pricing in usage logger.
+- [x] Ensure every token/cost is logged: log cache and store hits with 0 tokens; use model-aware pricing in usage logger.
 
 ---
 
 ## Recent completions
 
+- **2025-03-05** — Token/cost logging: model-aware pricing in usage logger (get_model_costs in config/openai.py, MODEL_PRICING for gpt-4o/gpt-4o-mini); log cache hits with 0 tokens in SectionTaggingAgent and SubsectionTaggingAgent (classify_sections_cache_hit, classify_subsections_cache_hit); tests/utils/test_logging.py and cache-hit assertions in tests/agents/test_tagging.py.
 - **2025-03-05** — Persist tagging cache: added TAGGING_CACHE_PATH, tagging_cache.py (TaggingCache load/persist), Section/Subsection agents accept cache and persist after update, TaggingAgent accepts cache_path and uses TaggingCache on init; pipeline passes tagging_cache_path; tests/test_tagging_cache.py and cache-backed tests in test_tagging.py.
 - **2025-03-05** — Unit and integration tests: store tests (default path, append preserves id/created_at); unit tests for SectionTaggingAgent, SubsectionTaggingAgent, DimensionTaggingAgent; suggestions_path in run_pipeline; integration test pipeline + store + governor resolution.
 - **2025-03-05** — Updated docs/docs/agent_roles.md with nine-agent architecture (3 taggers, 3 suggestors, 3 governors), suggestion store (location, module API, record shape, usage), intended flow, and planned (later) agents.

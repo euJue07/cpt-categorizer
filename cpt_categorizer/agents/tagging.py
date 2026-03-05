@@ -137,7 +137,23 @@ class SectionTaggingAgent:
     ) -> list[tuple[str, float]]:
         normalized_text = text_description.strip().lower()
         if normalized_text in self._cache_sections:
-            return self._cache_sections[normalized_text]
+            cached = self._cache_sections[normalized_text]
+            log_agent_usage(
+                timestamp=datetime.now().isoformat(),
+                raw_text=text_description,
+                description="classify_sections_cache_hit",
+                parsed_output=json.dumps(cached),
+                prompt_tokens=0,
+                completion_tokens=0,
+                total_tokens=0,
+                model="",
+                runtime_ms=0,
+                success=True,
+                is_error=False,
+                error_message="",
+                schema_version=self.schema_version,
+            )
+            return cached
 
         function_spec = {
             "name": "select_sections",
@@ -298,11 +314,43 @@ Instructions:
         if self._cache is not None:
             cache_key_str = f"{section}|{normalized_text}"
             if cache_key_str in self._cache.subsections:
-                return self._cache.subsections[cache_key_str]
+                cached = self._cache.subsections[cache_key_str]
+                log_agent_usage(
+                    timestamp=datetime.now().isoformat(),
+                    raw_text=text_description,
+                    description="classify_subsections_cache_hit",
+                    parsed_output=json.dumps(cached),
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    model="",
+                    runtime_ms=0,
+                    success=True,
+                    is_error=False,
+                    error_message="",
+                    schema_version=self.schema_version,
+                )
+                return cached
         else:
             cache_key = (section, normalized_text)
             if cache_key in self._cache_subsections:
-                return self._cache_subsections[cache_key]
+                cached = self._cache_subsections[cache_key]
+                log_agent_usage(
+                    timestamp=datetime.now().isoformat(),
+                    raw_text=text_description,
+                    description="classify_subsections_cache_hit",
+                    parsed_output=json.dumps(cached),
+                    prompt_tokens=0,
+                    completion_tokens=0,
+                    total_tokens=0,
+                    model="",
+                    runtime_ms=0,
+                    success=True,
+                    is_error=False,
+                    error_message="",
+                    schema_version=self.schema_version,
+                )
+                return cached
 
         subsection_prompt = self._get_subsection_prompt(section)
         function_spec = self._get_subsection_function_specification(section)

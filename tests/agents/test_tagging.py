@@ -392,9 +392,15 @@ def test_subsection_tagging_agent_classify_subsections_caches_by_section_and_tex
         subsection_schema=minimal_subsection_schema,
         schema_version="test",
     )
-    agent.classify_subsections("imaging", "Chest X-ray")
-    agent.classify_subsections("imaging", "  chest x-ray  ")
+    with patch("cpt_categorizer.agents.tagging.log_agent_usage") as log_usage:
+        agent.classify_subsections("imaging", "Chest X-ray")
+        agent.classify_subsections("imaging", "  chest x-ray  ")
     assert mock_call.call_count == 1
+    assert log_usage.call_count == 2
+    second_call_kw = log_usage.call_args_list[1].kwargs
+    assert second_call_kw["description"] == "classify_subsections_cache_hit"
+    assert second_call_kw["prompt_tokens"] == 0
+    assert second_call_kw["total_tokens"] == 0
 
 
 @pytest.mark.generate_tags
@@ -497,9 +503,17 @@ def test_section_tagging_agent_with_cache_loads_on_init_and_skips_api_when_cache
         schema_version="test",
         cache=cache,
     )
-    result = agent.classify_sections("Chest X-ray")
+    with patch("cpt_categorizer.agents.tagging.log_agent_usage") as log_usage:
+        result = agent.classify_sections("Chest X-ray")
     assert result == [("imaging", 0.9)]
     mock_call.assert_not_called()
+    log_usage.assert_called_once()
+    call_kw = log_usage.call_args.kwargs
+    assert call_kw["description"] == "classify_sections_cache_hit"
+    assert call_kw["prompt_tokens"] == 0
+    assert call_kw["completion_tokens"] == 0
+    assert call_kw["total_tokens"] == 0
+    assert call_kw["model"] == ""
 
 
 @pytest.mark.generate_tags
@@ -547,9 +561,17 @@ def test_subsection_tagging_agent_with_cache_loads_on_init_and_skips_api_when_ca
         schema_version="test",
         cache=cache,
     )
-    result = agent.classify_subsections("imaging", "Chest X-ray")
+    with patch("cpt_categorizer.agents.tagging.log_agent_usage") as log_usage:
+        result = agent.classify_subsections("imaging", "Chest X-ray")
     assert result == [("xray", 0.9)]
     mock_call.assert_not_called()
+    log_usage.assert_called_once()
+    call_kw = log_usage.call_args.kwargs
+    assert call_kw["description"] == "classify_subsections_cache_hit"
+    assert call_kw["prompt_tokens"] == 0
+    assert call_kw["completion_tokens"] == 0
+    assert call_kw["total_tokens"] == 0
+    assert call_kw["model"] == ""
 
 
 @pytest.mark.generate_tags
