@@ -3,21 +3,17 @@ from __future__ import annotations
 from datetime import datetime
 import json
 import logging
+from pathlib import Path
 import re
 import time
-from pathlib import Path
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
 import openai
-from openai import APIConnectionError
-from openai import APITimeoutError
-from openai import RateLimitError
+from openai import APIConnectionError, APITimeoutError, RateLimitError
 
 from cpt_categorizer.config.openai import OPENAI_MODEL
 from cpt_categorizer.tagging_cache import TaggingCache
 from cpt_categorizer.utils.logging import log_agent_usage
-
 
 SECTION_PROMPT_TEMPLATE = """You are a medical classification expert for CPT tagging.
 
@@ -456,12 +452,16 @@ class DimensionTaggingAgent:
                     continue
                 allowed_values = set(dimension_enum_map[dim])
                 normalized_items = self._normalize_items(values, min_confidence=0.5)
-                filtered_items = [item for item in normalized_items if item["value"] in allowed_values]
+                filtered_items = [
+                    item for item in normalized_items if item["value"] in allowed_values
+                ]
                 if filtered_items:
                     actual_out[dim] = filtered_items
 
         existing_out: dict[str, list[dict[str, float | str]]] = {}
-        existing_in = proposed_in.get("existing_dimensions", {}) if isinstance(proposed_in, dict) else {}
+        existing_in = (
+            proposed_in.get("existing_dimensions", {}) if isinstance(proposed_in, dict) else {}
+        )
         if isinstance(existing_in, dict):
             for dimension, values in existing_in.items():
                 dim = to_snake_case(str(dimension))
@@ -503,8 +503,7 @@ class DimensionTaggingAgent:
             return empty_dimensions()
 
         dimension_enum_map = {
-            dim: self.dimension_schema.get(dim, {}).get("values", [])
-            for dim in allowed_dimensions
+            dim: self.dimension_schema.get(dim, {}).get("values", []) for dim in allowed_dimensions
         }
         prompt = DIMENSION_PROMPT_TEMPLATE.format(
             section=section,
@@ -624,9 +623,7 @@ class TaggingAgent:
     def classify_dimensions(
         self, section: str, subsection: str, text_description: str
     ) -> dict[str, Any]:
-        return self._dimension_agent.classify_dimensions(
-            section, subsection, text_description
-        )
+        return self._dimension_agent.classify_dimensions(section, subsection, text_description)
 
     def generate_tags(
         self, text_description: str, confidence_threshold: float = 0.5

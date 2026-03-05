@@ -1,7 +1,6 @@
 import re
 from typing import Any
 
-
 SNAKE_CASE_SANITIZER = re.compile(r"[^a-z0-9]+")
 
 
@@ -43,9 +42,7 @@ class NormalizerAgent:
             "dimensions": {
                 "actual": {k: v for k, v in normalized_actual.items() if k},
                 "proposed": {
-                    "existing_dimensions": {
-                        k: v for k, v in normalized_existing.items() if k
-                    },
+                    "existing_dimensions": {k: v for k, v in normalized_existing.items() if k},
                     "new_dimensions": {k: v for k, v in normalized_new.items() if k},
                 },
             },

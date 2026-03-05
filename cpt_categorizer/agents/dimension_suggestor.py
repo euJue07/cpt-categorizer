@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 import hashlib
 import json
-import time
-from datetime import datetime
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import openai
@@ -28,7 +28,9 @@ Propose a short description for this new dimension (what it represents clinicall
 """
 
 
-def _context_for_dimension(section: str, subsection: str, dimension_key: str, text_description: str) -> str:
+def _context_for_dimension(
+    section: str, subsection: str, dimension_key: str, text_description: str
+) -> str:
     """Stable context for deduplication: same section + subsection + dimension key + description -> same context."""
     normalized = text_description.strip().lower()
     desc_hash = hashlib.sha256(normalized.encode("utf-8")).hexdigest()
@@ -52,7 +54,9 @@ def _log_usage(
         timestamp=datetime.now().isoformat(),
         raw_text=text_description,
         description=description,
-        parsed_output=json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output,
+        parsed_output=(
+            json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output
+        ),
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
@@ -221,7 +225,9 @@ class DimensionSuggestorAgent:
                         function_call={"name": "suggest_dimension_description"},
                     )
                     parsed = json.loads(response.choices[0].message.function_call.arguments)
-                    suggested_description = str(parsed.get("suggested_description", "")).strip() or ""
+                    suggested_description = (
+                        str(parsed.get("suggested_description", "")).strip() or ""
+                    )
                 except Exception as exc:
                     error_message = str(exc)
                     success = False
@@ -242,7 +248,9 @@ class DimensionSuggestorAgent:
                     continue
 
             # 3. Check store by key + parent: same key under same section/subsection already suggested (pending/accepted)?
-            existing_by_key = find_by_type_key(self.store_path, "dimension", dimension_key, context=None)
+            existing_by_key = find_by_type_key(
+                self.store_path, "dimension", dimension_key, context=None
+            )
             existing_reusable = [
                 s
                 for s in existing_by_key

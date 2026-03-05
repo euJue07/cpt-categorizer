@@ -26,22 +26,14 @@ def _normalize_sections(data: object) -> dict[str, list[tuple[str, float]]]:
     """Parse sections dict from JSON: str -> list of [section, confidence]."""
     if not isinstance(data, dict):
         return {}
-    return {
-        str(k): _normalize_section_value(v)
-        for k, v in data.items()
-        if isinstance(k, str)
-    }
+    return {str(k): _normalize_section_value(v) for k, v in data.items() if isinstance(k, str)}
 
 
 def _normalize_subsections(data: object) -> dict[str, list[tuple[str, float]]]:
     """Parse subsections dict from JSON: "section|normalized_text" -> list of [subsection, confidence]."""
     if not isinstance(data, dict):
         return {}
-    return {
-        str(k): _normalize_section_value(v)
-        for k, v in data.items()
-        if isinstance(k, str)
-    }
+    return {str(k): _normalize_section_value(v) for k, v in data.items() if isinstance(k, str)}
 
 
 class TaggingCache:

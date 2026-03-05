@@ -70,6 +70,16 @@ An automated categorization of unstandardized Philippine CPT descriptions using 
 
 Data is not included in the repo. Place your source CSV (e.g. Maxicare CPT List) in `data/raw/`. Run `make data` for instructions if needed.
 
+## Run the pipeline
+
+From the project root:
+
+```bash
+python -m cpt_categorizer.pipeline
+```
+
+You will be prompted for how many top rows to process (default 10). The pipeline reads from `data/raw/CPT Desc With Utilization.csv` by default; ensure `data/raw` exists and your CSV has a description column (e.g. `CPTDesc`). Outputs go to `logs/category_result.csv` and `logs/dimension_result.csv`. See [Getting started](docs/docs/getting-started.md) for more options.
+
 ---
 
 ## AI agent framework
@@ -95,6 +105,7 @@ This project uses a modular AI agent framework to classify unstandardized CPT ph
 - **Lint**: `make lint` (Ruff + Black check)
 - **Format**: `make format` (Black)
 - **Schema**: `make lint-schema` (validates dimensions.json: no duplicates, snake_case, sort)
+- **Test**: `make test` (or `pytest tests/`)
 
 ---
 

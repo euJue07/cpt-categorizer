@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
-import time
 from datetime import datetime
+import json
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import openai
@@ -48,7 +48,9 @@ def _log_usage(
         timestamp=datetime.now().isoformat(),
         raw_text=raw_text,
         description=description,
-        parsed_output=json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output,
+        parsed_output=(
+            json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output
+        ),
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
@@ -119,7 +121,11 @@ class SectionGovernorAgent:
             # 2. Same key has accepted/rejected in store -> reuse
             by_key = find_by_type_key(self.store_path, "section", suggested_key, context=None)
             reused = next(
-                (x for x in by_key if x.get("status") in ("accepted", "rejected") and x.get("id") != suggestion_id),
+                (
+                    x
+                    for x in by_key
+                    if x.get("status") in ("accepted", "rejected") and x.get("id") != suggestion_id
+                ),
                 None,
             )
             if reused:
@@ -168,7 +174,10 @@ class SectionGovernorAgent:
                     model=OPENAI_MODEL,
                     temperature=0,
                     messages=[
-                        {"role": "system", "content": "You decide whether to accept or reject taxonomy suggestions."},
+                        {
+                            "role": "system",
+                            "content": "You decide whether to accept or reject taxonomy suggestions.",
+                        },
                         {"role": "user", "content": prompt},
                     ],
                     functions=[function_spec],

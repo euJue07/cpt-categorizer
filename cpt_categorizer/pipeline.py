@@ -1,8 +1,7 @@
-import os
 from datetime import datetime
+import os
 from pathlib import Path
-from typing import Any
-from typing import Optional
+from typing import Any, Optional
 
 from cpt_categorizer.agents.compliance import SchemaComplianceAgent
 from cpt_categorizer.agents.dimension_governor import DimensionGovernorAgent
@@ -13,11 +12,8 @@ from cpt_categorizer.agents.section_governor import SectionGovernorAgent
 from cpt_categorizer.agents.section_suggestor import SectionSuggestorAgent
 from cpt_categorizer.agents.subsection_governor import SubsectionGovernorAgent
 from cpt_categorizer.agents.subsection_suggestor import SubsectionSuggestorAgent
-from cpt_categorizer.agents.tagging import TaggingAgent
-from cpt_categorizer.agents.tagging import empty_dimensions
-from cpt_categorizer.config.directory import LOG_DIR
-from cpt_categorizer.config.directory import RAW_DIR
-from cpt_categorizer.config.directory import TAGGING_CACHE_PATH
+from cpt_categorizer.agents.tagging import TaggingAgent, empty_dimensions
+from cpt_categorizer.config.directory import LOG_DIR, RAW_DIR, TAGGING_CACHE_PATH
 from cpt_categorizer.schema_contract import load_schema_contract
 
 
@@ -83,15 +79,11 @@ def process_row(
         )
         if not candidate_subsections:
             if subsection_suggestor is not None:
-                subsection_suggestor.suggest_subsection(
-                    section, parsed_desc, source=base_code
-                )
+                subsection_suggestor.suggest_subsection(section, parsed_desc, source=base_code)
             continue
 
         for subsection, subsection_conf in candidate_subsections:
-            dimensions = tagging_agent.classify_dimensions(
-                section, subsection, parsed_desc
-            )
+            dimensions = tagging_agent.classify_dimensions(section, subsection, parsed_desc)
             proposed = dimensions.get("proposed") or {}
             has_proposed = bool(
                 proposed.get("existing_dimensions") or proposed.get("new_dimensions")
@@ -116,9 +108,7 @@ def process_row(
                 if subsection != "others"
                 else (section_conf + subsection_conf) / 2
             )
-            dims_for_tag = (
-                dimensions if subsection != "others" else empty_dimensions()
-            )
+            dims_for_tag = dimensions if subsection != "others" else empty_dimensions()
             tags.append(
                 {
                     "section": section,

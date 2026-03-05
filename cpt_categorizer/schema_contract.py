@@ -40,9 +40,7 @@ class SchemaContract:
             for subsection, subsection_spec in subsection_map.items():
                 dimensions = subsection_spec.get("dimensions", [])
                 if not isinstance(dimensions, list):
-                    raise ValueError(
-                        f"{section}.{subsection}: 'dimensions' must be a list"
-                    )
+                    raise ValueError(f"{section}.{subsection}: 'dimensions' must be a list")
                 for dimension in dimensions:
                     if dimension not in self.dimensions:
                         raise ValueError(

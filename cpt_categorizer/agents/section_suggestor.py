@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 import hashlib
 import json
-import time
-from datetime import datetime
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import openai
@@ -51,7 +51,9 @@ def _log_usage(
         timestamp=datetime.now().isoformat(),
         raw_text=text_description,
         description=description,
-        parsed_output=json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output,
+        parsed_output=(
+            json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output
+        ),
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
@@ -147,7 +149,10 @@ class SectionSuggestorAgent:
                 model=OPENAI_MODEL,
                 temperature=0,
                 messages=[
-                    {"role": "system", "content": "You suggest new medical section keys and descriptions in JSON."},
+                    {
+                        "role": "system",
+                        "content": "You suggest new medical section keys and descriptions in JSON.",
+                    },
                     {"role": "user", "content": prompt},
                 ],
                 functions=[function_spec],
@@ -180,7 +185,9 @@ class SectionSuggestorAgent:
 
         # 3. Check store by key: same key already suggested (pending/accepted)?
         existing_by_key = find_by_type_key(self.store_path, "section", suggested_key, context=None)
-        existing_reusable = [s for s in existing_by_key if s.get("status") in ("pending", "accepted")]
+        existing_reusable = [
+            s for s in existing_by_key if s.get("status") in ("pending", "accepted")
+        ]
         if existing_reusable:
             runtime_ms = int((time.time() - start) * 1000)
             _log_usage(
@@ -211,7 +218,11 @@ class SectionSuggestorAgent:
         # Reload to get id and created_at
         section_suggestions = find_by_type(self.store_path, "section")
         new_record = next(
-            (s for s in section_suggestions if s.get("context") == context and s.get("suggested_key") == suggested_key),
+            (
+                s
+                for s in section_suggestions
+                if s.get("context") == context and s.get("suggested_key") == suggested_key
+            ),
             record,
         )
 

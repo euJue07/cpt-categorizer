@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 import hashlib
 import json
-import time
-from datetime import datetime
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import openai
@@ -52,7 +52,9 @@ def _log_usage(
         timestamp=datetime.now().isoformat(),
         raw_text=text_description,
         description=description,
-        parsed_output=json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output,
+        parsed_output=(
+            json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output
+        ),
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
@@ -65,9 +67,13 @@ def _log_usage(
     )
 
 
-def _existing_subsection_keys(section_schema: dict[str, Any], subsection_schema: dict[str, Any], section: str) -> str:
+def _existing_subsection_keys(
+    section_schema: dict[str, Any], subsection_schema: dict[str, Any], section: str
+) -> str:
     """Return comma-separated existing subsection keys for the given section."""
-    keys = section_schema.get(section, {}).get("subsections") or list(subsection_schema.get(section, {}).keys())
+    keys = section_schema.get(section, {}).get("subsections") or list(
+        subsection_schema.get(section, {}).keys()
+    )
     return ", ".join(sorted(keys)) if keys else "(none)"
 
 
@@ -130,7 +136,9 @@ class SubsectionSuggestorAgent:
             return matching_by_context[0]
 
         # 2. Call LLM to get suggested_key and suggested_description
-        existing_keys = _existing_subsection_keys(self.section_schema, self.subsection_schema, section)
+        existing_keys = _existing_subsection_keys(
+            self.section_schema, self.subsection_schema, section
+        )
         prompt = SUBSECTION_SUGGEST_PROMPT_TEMPLATE.format(
             section=section,
             existing_keys=existing_keys,

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import json
-import uuid
 from datetime import datetime, timezone
+import json
 from pathlib import Path
 from typing import Any, Literal
+import uuid
 
 from cpt_categorizer.config.directory import SUGGESTIONS_PATH
 

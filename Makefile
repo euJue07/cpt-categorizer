@@ -42,7 +42,16 @@ lint-schema:
 format:
 	black --config pyproject.toml cpt_categorizer
 
+## Fix lint (Ruff --fix) and format with Black
+.PHONY: fix
+fix:
+	ruff check cpt_categorizer --fix
+	black --config pyproject.toml cpt_categorizer
 
+## Run tests
+.PHONY: test
+test:
+	$(PYTHON_INTERPRETER) -m pytest tests/
 
 
 ## Set up python interpreter environment

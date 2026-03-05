@@ -1,4 +1,5 @@
 import csv
+
 from cpt_categorizer.config.directory import LOG_DIR
 from cpt_categorizer.config.openai import get_model_costs
 

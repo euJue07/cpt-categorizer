@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
-import time
 from datetime import datetime
+import json
 from pathlib import Path
+import time
 from typing import Any, Optional
 
 import openai
@@ -49,7 +49,9 @@ def _log_usage(
         timestamp=datetime.now().isoformat(),
         raw_text=raw_text,
         description=description,
-        parsed_output=json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output,
+        parsed_output=(
+            json.dumps(parsed_output) if not isinstance(parsed_output, str) else parsed_output
+        ),
         prompt_tokens=prompt_tokens,
         completion_tokens=completion_tokens,
         total_tokens=total_tokens,
@@ -209,9 +211,7 @@ class DimensionGovernorAgent:
             )
             existing_values_for_key_line = ""
             if suggested_key and suggested_key in self.dimension_schema:
-                existing_values_for_key_line = (
-                    f"Existing values for dimension '{suggested_key}': {self._existing_values_for_key(suggested_key)}"
-                )
+                existing_values_for_key_line = f"Existing values for dimension '{suggested_key}': {self._existing_values_for_key(suggested_key)}"
             prompt = DIMENSION_GOVERNOR_PROMPT_TEMPLATE.format(
                 suggested_key=suggested_key,
                 suggested_values_str=suggested_values_str,

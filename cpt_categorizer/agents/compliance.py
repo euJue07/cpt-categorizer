@@ -92,9 +92,7 @@ class SchemaComplianceAgent:
             for dimension, values in actual.items():
                 dim_key = to_snake_case(str(dimension))
                 if str(dimension) != dim_key:
-                    warnings.append(
-                        f"normalized dimension key '{dimension}' -> '{dim_key}'"
-                    )
+                    warnings.append(f"normalized dimension key '{dimension}' -> '{dim_key}'")
                 if dim_key not in allowed_dimensions:
                     warnings.append(f"dropped non-allowed dimension '{dimension}'")
                     continue
@@ -137,9 +135,7 @@ class SchemaComplianceAgent:
             for dimension, values in new_in.items():
                 dim_key = to_snake_case(str(dimension))
                 if str(dimension) != dim_key:
-                    warnings.append(
-                        f"normalized new dimension key '{dimension}' -> '{dim_key}'"
-                    )
+                    warnings.append(f"normalized new dimension key '{dimension}' -> '{dim_key}'")
                 if not dim_key:
                     continue
                 valid_values = self._filter_values(
@@ -182,9 +178,7 @@ class SchemaComplianceAgent:
             raw_value = str(item.get("value", ""))
             value = to_snake_case(raw_value)
             if raw_value != value:
-                warnings.append(
-                    f"normalized value '{raw_value}' -> '{value}' in '{dimension}'"
-                )
+                warnings.append(f"normalized value '{raw_value}' -> '{value}' in '{dimension}'")
             if not value:
                 continue
             if require_known and value not in known_values:
